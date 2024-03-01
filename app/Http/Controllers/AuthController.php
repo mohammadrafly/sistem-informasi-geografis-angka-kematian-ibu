@@ -20,14 +20,17 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (!$request->ajax()) {
-            return view('auth.login', compact(['title' => 'Login']));
+            $data = [
+                'title' => 'Login'
+            ];
+            return view('page.auth.login', compact('data'));
         }
 
         if (!Auth::attempt($credentials)) {
             return $this->jsonResponse(false, 'Invalid credentials');
         }
 
-        return $this->jsonResponse(true, '', 204);
+        return $this->jsonResponse(true, 'Berhasil Login!', 204);
     }
 
     public function logout()

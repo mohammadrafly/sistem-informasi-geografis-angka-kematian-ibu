@@ -32,28 +32,25 @@ class UserController extends Controller
             'title' => 'Data User',
             'users' => User::all(),
         ];
-        return view('user.index', compact('data'));
+        return view('page.dashboard.user', compact('data'));
     }
 
     public function show(Request $request, int $id)
     {
-        $user = User::find($id);
-
-        if (!$user) {
-            return $this->jsonResponse(false, 'User not found.', 404);
-        }
-
         if ($request->ajax()) {
-            if ($request->isMethod('get')) {
-                return $this->jsonResponse(true, $user, 200);
+            if (!User::find($id)) {
+                return $this->jsonResponse(false, 'User not found.', 404);
             }
-
+    
+            if ($request->isMethod('get')) {
+                return $this->jsonResponse(true, User::find($id), 200);
+            }
+    
+            $user = User::find($id);
             $user->update($request->only(['name', 'email']));
 
             return $this->jsonResponse(true, 'Berhasil Memperbarui User.');
         }
-
-        return view('user.show', compact('user'));
     }
 
     public function destroy(int $id)

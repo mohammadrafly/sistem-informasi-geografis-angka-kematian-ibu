@@ -49,7 +49,7 @@ class ArtikelController extends Controller
             'title' => 'Data Artikel',
             'artikel' => Artikel::all(),
         ];
-        return view('', compact('data'));
+        return view('page.dashboard.artikel', compact('data'));
     }
 
     public function artikelSingle(Request $request, $id)
@@ -104,7 +104,7 @@ class ArtikelController extends Controller
             'title' => 'Data CategoryArtikel',
             'categoryArtikel' => CategoryArtikel::all(),
         ];
-        return view('', compact('data'));
+        return view('page.dashboard.artikelCategory', compact('data'));
     }
 
     public function artikelCategorySingle(Request $request, $id)

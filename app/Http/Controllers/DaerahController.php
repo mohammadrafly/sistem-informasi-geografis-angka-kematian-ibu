@@ -23,7 +23,7 @@ class DaerahController extends Controller
                 'title' => 'Data Daerah',
                 'daerah' => Daerah::all(),
             ];
-            return view('', compact('data'));
+            return view('page.dashboard.daerah', compact('data'));
         }
 
         $daerah = Daerah::create($request->only('nama_daerah', 'warna'));

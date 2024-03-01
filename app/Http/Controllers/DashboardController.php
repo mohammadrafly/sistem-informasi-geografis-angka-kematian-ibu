@@ -8,6 +8,9 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        return view('dashboard.index', compact(['title' => 'Dashboard']));
+        $data = [
+            'title' => 'Dashboard'
+        ];
+        return view('page.dashboard.index', compact('data'));
     }
 }

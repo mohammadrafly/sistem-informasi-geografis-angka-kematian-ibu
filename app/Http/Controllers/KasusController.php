@@ -54,7 +54,7 @@ class KasusController extends Controller
             'title' => 'Data Kasus',
             'kasus' => Kasus::all(),
         ];
-        return view('', compact('data'));
+        return view('page.dashboard.kasus', compact('data'));
     }
 
     public function kasusSingle(Request $request, $id)
@@ -109,7 +109,7 @@ class KasusController extends Controller
             'title' => 'Data Category Penyebab',
             'category Penyebab' => CategoryPenyebab::all(),
         ];
-        return view('', compact('data'));
+        return view('page.dashboard.kasusCategory', compact('data'));
     }
 
     public function kasusCategorySingle(Request $request, $id)

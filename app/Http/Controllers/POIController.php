@@ -46,7 +46,7 @@ class POIController extends Controller
             'title' => 'Data Point Of Interest',
             'poi' => POI::all(),
         ];
-        return view('', compact('data'));
+        return view('page.dashboard.poi', compact('data'));
     }
 
     public function poiSingle(Request $request, $id)
@@ -101,7 +101,7 @@ class POIController extends Controller
             'title' => 'Data CategoryPOI',
             'categoryPOI' => CategoryPOI::all(),
         ];
-        return view('', compact('data'));
+        return view('page.dashboard.poiCategory', compact('data'));
     }
 
     public function poiCategorySingle(Request $request, $id)

@@ -8,22 +8,14 @@ use App\Models\Daerah;
 use App\Models\POI;
 
 class HomeController extends Controller
-{
-    private function jsonResponse($success, $message, $statusCode = 200)
-    {
-        return response()->json([
-            'success' => $success,
-            'message' => $message
-        ], $statusCode);
-    }
-    
+{    
     public function index()
     {
         $data = [
             'title' => 'Home',
             'artikel' => Artikel::all(),
         ];
-        return view('', compact('data'));
+        return view('page.home.index', compact('data'));
     }
 
     public function artikelHome()
@@ -32,7 +24,7 @@ class HomeController extends Controller
             'title' => 'Artikel',
             'artikel' => Artikel::all(),
         ];
-        return view('', compact('data'));
+        return view('page.home.artikel', compact('data'));
     }
 
     public function artikelSingleHome(Request $request, $id)
@@ -41,7 +33,7 @@ class HomeController extends Controller
             'title' => 'Artikel',
             'artikel' => Artikel::find($id),
         ];
-        return view('', compact('data'));
+        return view('page.home.artikelSingle', compact('data'));
     }
 
     public function artikelCategoryHome(Request $request, $id)
@@ -50,7 +42,7 @@ class HomeController extends Controller
             'title' => 'Artikel',
             'artikel' => Artikel::with('category')->where('category', $id)->get(),
         ];
-        return view('', compact('data'));
+        return view('page.home.artikelCategory', compact('data'));
     }
 
     public function peta()
@@ -58,7 +50,7 @@ class HomeController extends Controller
         $data = [
             'title' => 'PETA Resiko',
         ];
-        return view('', compact('data'));
+        return view('page.home.peta', compact('data'));
     }
     
     public function petaResiko(Request $request)

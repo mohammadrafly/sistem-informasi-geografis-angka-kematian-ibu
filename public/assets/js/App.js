@@ -12,8 +12,6 @@ function ajaxRequest(url, method, data, successCallback, errorCallback) {
       headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
-      processData: false,
-      contentType: false,
       success: successCallback,
       error: errorCallback
     });
@@ -30,7 +28,7 @@ async function Logout() {
         if (response.success) {
             window.location.href = BASEURL + 'login';
         } else {
-            throw response.message;
+            alert(response.message);
         }
     } catch (error) {
         console.error(error);

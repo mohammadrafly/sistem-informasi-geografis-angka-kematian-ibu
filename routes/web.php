@@ -46,6 +46,8 @@ Route::middleware(['auth'])->group(function () {
         });
         Route::controller(DashboardController::class)->group(function () {
             Route::match(['GET', 'POST'], '/', 'index')->name('dashboard');
+            Route::match(['GET', 'POST'], '/profile/{id}', 'updateProfile')->name('profile');
+            Route::match(['GET', 'POST'], '/profile/password/{id}', 'updatePassword')->name('password');
         });
         Route::controller(ArtikelController::class)->group(function () {
             Route::prefix('artikel')->group(function (){

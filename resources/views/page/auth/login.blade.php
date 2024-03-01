@@ -26,30 +26,6 @@
 
 @section('script')
 
-<script>
-    async function Login() {
-        const formData = $('#formLogin').serialize();
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            $.ajax({
-                url: BASEURL + 'login',
-                method: 'POST',
-                data: formData,
-                success: function(response) {
-                    console.log(response);
-                    $('#formLogin')[0].reset();
-                    alert('Login Successful!');
-                    window.location.href = BASEURL + 'dashboard';
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
-                    alert('Failed to Login. Please try again later.');
-                }
-            });
-    }
-</script>
+<script src="{{ asset('assets/js/Auth.js') }}"></script>
 
 @endSection()

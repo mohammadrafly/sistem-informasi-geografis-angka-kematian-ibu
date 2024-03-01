@@ -98,7 +98,7 @@ class POIController extends Controller
         }
 
         $data = [
-            'title' => 'Data CategoryPOI',
+            'title' => 'Data Category Point Of Interest',
             'categoryPOI' => CategoryPOI::all(),
         ];
         return view('page.dashboard.poiCategory', compact('data'));

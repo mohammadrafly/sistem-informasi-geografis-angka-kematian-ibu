@@ -97,11 +97,11 @@ class ArtikelController extends Controller
                 'nama_category' => $request->nama_category,
             ]);
 
-            return $this->jsonResponse(true, 'Berhasil Menambah CategoryArtikel.');
+            return $this->jsonResponse(true, 'Berhasil Menambah Kategori Artikel.');
         }
 
         $data = [
-            'title' => 'Data CategoryArtikel',
+            'title' => 'Data Kategori Artikel',
             'categoryArtikel' => CategoryArtikel::all(),
         ];
         return view('page.dashboard.artikelCategory', compact('data'));
@@ -111,7 +111,7 @@ class ArtikelController extends Controller
     {
         if ($request->ajax()) {
             if (!CategoryArtikel::find($id)) {
-                return $this->jsonResponse(false, 'Category Artikel not found.', 404);
+                return $this->jsonResponse(false, 'Kategori Artikel not found.', 404);
             }
     
             if ($request->isMethod('get')) {
@@ -121,7 +121,7 @@ class ArtikelController extends Controller
             $categoryArtikel = CategoryArtikel::find($id);
             $categoryArtikel->update($request->only(['nama_category']));
     
-            return $this->jsonResponse(true, 'Berhasil Memperbarui Category Artikel.');
+            return $this->jsonResponse(true, 'Berhasil Memperbarui Kategori Artikel.');
         }
     }
 
@@ -129,7 +129,7 @@ class ArtikelController extends Controller
     {
         if ($request->ajax()) {
             if (!CategoryArtikel::find($id)) {
-                return $this->jsonResponse(false, 'Category Artikel not found.', 404);
+                return $this->jsonResponse(false, 'Kategori Artikel not found.', 404);
             }
 
             if (!Artikel::find('category', $id)) {
@@ -139,7 +139,7 @@ class ArtikelController extends Controller
             $CategoryArtikel = CategoryArtikel::find($id);
             $CategoryArtikel->delete();
 
-            return $this->jsonResponse(true, 'Berhasil Menghapus Category Artikel.');
+            return $this->jsonResponse(true, 'Berhasil Menghapus Kategori Artikel.');
         }
     }
 }

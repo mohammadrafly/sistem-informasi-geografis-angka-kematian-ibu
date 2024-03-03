@@ -78,10 +78,64 @@
     </nav>
 </div>
 
+<div class="my-10 bg-white rounded-lg p-5 shadow-xl">
+    <div id="map" class="w-full h-96"></div>
+</div>
 
 @endSection()
 
 @section('script')
+
+@foreach ($data['daerah'] as $item)
+<script src="{{ asset('geojsons/'.$item->geojson) }}"></script>
+@endforeach
+
+<script>
+function getGeojson() {
+    $.ajax({
+        url: BASEURL + 'dashboard/daerah/get-daerah',
+        success: function(data) {
+            var map = L.map('map').setView([-8.1805, 113.6856], 13);
+
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+            var dataArray = data.message;
+            dataArray.forEach(function(featureData) {
+                var Daerah = {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "properties": {},
+                            "geometry": {
+                                "coordinates": geojson,
+                                "type": "Polygon"
+                            }
+                        }
+                    ]
+                };
+
+                var LayerDaerah = L.geoJSON(Daerah, {
+                    style: {
+                        fillColor: featureData.warna,
+                        color: featureData.warna,
+                        weight: 2
+                    }
+                }).addTo(map);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching GeoJSON:', error);
+        }
+    });
+}
+
+$(document).ready(function() {
+    getGeojson();
+});
+</script>
 
 <script src="{{ asset('assets/js/Daerah.js') }}"></script>
 

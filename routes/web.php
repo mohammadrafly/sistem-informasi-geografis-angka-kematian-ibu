@@ -87,6 +87,7 @@ Route::middleware(['auth'])->group(function () {
         });
         Route::controller(DaerahController::class)->group(function () {
             Route::prefix('daerah')->group(function (){
+                Route::get('/get-daerah', 'getDaerah')->name('get.daerah');
                 Route::match(['GET','POST'], '/', 'daerah')->name('daerah');
                 Route::match(['GET','POST'], '/update/{id}', 'daerahSingle')->name('daerah.single');
                 Route::match(['GET'], '/delete/{id}', 'daerahDelete')->name('daerah.delete');

@@ -11,6 +11,7 @@ async function Login() {
             data: formData,
             success: function(response) {
                 console.log(response);
+                alert(response.message);
                 window.location.href = BASEURL + 'dashboard';
             },
             error: function(xhr, status, error) {

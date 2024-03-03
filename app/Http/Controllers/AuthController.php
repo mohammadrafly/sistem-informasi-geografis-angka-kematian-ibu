@@ -17,26 +17,18 @@ class AuthController extends Controller
 
     public function index(Request $request)
     {
-        $credentials = $request->only('email', 'password');
-
-        if (!$request->ajax()) {
-            $data = [
-                'title' => 'Login'
-            ];
-            return view('page.auth.login', compact('data'));
-        }
-
-        if (!Auth::attempt($credentials)) {
-            return $this->jsonResponse(false, 'Invalid credentials');
-        }
-
-        return $this->jsonResponse(true, 'Berhasil Login!', 204);
+        $data = ['title' => 'Login'];
+        return !$request->ajax('get')
+        ? view('page.auth.login', compact('data'))
+        : (Auth::attempt($request->only('email', 'password'))
+            ? $this->jsonResponse(true, 'Berhasil Login!', 200)
+            : $this->jsonResponse(false, 'Password Salah', 400));
+    
     }
 
     public function logout()
     {
         Auth::logout();
-
         return $this->jsonResponse(true, 'Logout successful', 200);
     }
 }

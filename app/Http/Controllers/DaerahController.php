@@ -19,11 +19,33 @@ class DaerahController extends Controller
     {
         if ($request->hasFile('geojson')) {
             $geojson = $request->file('geojson');
-            $fileName = time() . '.' . $geojson->getClientOriginalExtension();
-            $geojson->move(public_path('geojsons'), $fileName);
-            return $fileName;
+            
+            $content = file_get_contents($geojson->getPathname());
+            
+            $data = json_decode($content, true);
+            
+            $coordinates = [];
+            foreach ($data['features'] as $feature) {
+                if (isset($feature['geometry']['coordinates'])) {
+                    $coordinates[] = $feature['geometry']['coordinates'];
+                }
+            }
+    
+            $jsContent = 'const geojson = ' . json_encode($coordinates, JSON_PRETTY_PRINT) . ';';
+    
+            $filename = 'coordinates_' . time() . '.js';
+    
+            file_put_contents(public_path('geojsons') . '/' . $filename, $jsContent);
+    
+            return $filename;
         }
         return null;
+    }
+    
+    public function getDaerah()
+    {
+        $data = Daerah::all();
+        return $this->jsonResponse(true, $data, 200);
     }
 
     public function daerah(Request $request)
@@ -58,6 +80,7 @@ class DaerahController extends Controller
 
         $data = [
             'title' => 'Data Daerah',
+            'daerah' => Daerah::all()
         ];
         return view('page.dashboard.daerah', compact('data'));
     }

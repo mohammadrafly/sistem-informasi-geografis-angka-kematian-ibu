@@ -7,13 +7,20 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name') }} | {{ $data['title'] }}</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdn.tiny.cloud/1/a2k2kudtwwpqcx67oeeolwlri3t7q1ywzs753smm3u0wn2og/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     @vite('resources/css/app.css')
 </head>
 <body>
-    <div class="bg-gray-100 flex min-h-screen">
+    <div class="bg-[#d8fbf7] flex min-h-screen">
         @include('layout.partials.sidebar')
         <div class="m-10 w-full">
             @yield('content')
+            <footer class="sticky mt-10 bottom-0">
+                <div class="w-full max-w-screen-xl">
+                    <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">© {{ date('Y')}} {{ config('app.name') }}. All Rights Reserved.
+                    </span>
+                </div>
+            </footer>            
         </div>
     </div>
 

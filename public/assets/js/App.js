@@ -52,3 +52,11 @@ expandButton.addEventListener("click", () => {
 const toggleExpandButtonVisibility = (isSidebarMinimized) => {
     expandButton.classList.toggle("hidden", !isSidebarMinimized);
 };
+
+function toggleCollapse(elementId) {
+    const element = document.getElementById(elementId);
+    element.classList.toggle('max-h-0');
+    element.classList.toggle('max-h-full');
+    element.classList.toggle('hidden');
+}
+

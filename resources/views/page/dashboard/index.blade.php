@@ -28,5 +28,8 @@
 
 @section('script')
 
+<script>
+    
+</script>
 
 @endSection()

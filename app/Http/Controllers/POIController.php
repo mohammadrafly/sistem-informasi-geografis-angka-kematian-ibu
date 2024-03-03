@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\POI;
 use App\Models\CategoryPOI;
+use App\Models\Kasus;
 
 class POIController extends Controller
 {
@@ -30,22 +31,49 @@ class POIController extends Controller
     public function poi(Request $request)
     {
         if ($request->ajax()) {
+            if ($request->isMethod('get')) {
+                $perPage = $request->input('per_page', 10);
+                $query = POI::query();
+
+                $query->leftJoin('kasus', 'poi.id_kasus', '=', 'kasus.id')
+                      ->leftJoin('category_poi', 'poi.id_category', '=', 'category_poi.id');
+          
+                if ($request->has('search')) {
+                    $searchTerm = $request->input('search');
+                    $query->where('poi.nama_titik', 'like', "%$searchTerm%")
+                            ->orWhere('kasus.alamat', 'like', "%$searchTerm%")
+                            ->orWhere('poi.geojson', 'like', "%$searchTerm%")
+                            ->orWhere('category_poi.nama_category', 'like', "%$searchTerm%")
+                            ->orWhere('poi.warna', 'like', "%$searchTerm%");
+                }
             
+                $data = $query->select('poi.*', 'kasus.alamat as alamat', 'category_poi.nama_category as nama_kategori')
+                                ->paginate($perPage);
+      
+                return $this->jsonResponse(true, $data, 200);
+            }
+    
             $geojson = $this->handleFileUpload($request);
 
-            POI::create([
+            $poi = POI::create([
                 'nama_titik' => $request->nama_titik,
                 'geojson' => $geojson,
                 'warna' => $request->warna,
+                'id_category' => $request->id_category,
+                'id_kasus' => $request->id_kasus,
             ]);
 
-            return $this->jsonResponse(true, 'Berhasil Menambah POI.');
+            return $this->jsonResponse(true, 'Berhasil Menambah Point Of Interest.');
         }
+
+        $existingIds = POI::pluck('id_kasus')->toArray();
 
         $data = [
             'title' => 'Data Point Of Interest',
-            'poi' => POI::all(),
+            'category' => CategoryPOI::all(),
+            'kasus' => Kasus::whereNotIn('id', $existingIds)->get(),
         ];
+
         return view('page.dashboard.poi', compact('data'));
     }
 
@@ -57,7 +85,7 @@ class POIController extends Controller
             }
     
             if ($request->isMethod('get')) {
-                return $this->jsonResponse(true, POI::find($id), 200);
+                return $this->jsonResponse(true, POI::with('kasus', 'category')->find($id), 200);
             }
     
             $poi = POI::find($id);
@@ -90,16 +118,29 @@ class POIController extends Controller
     public function poiCategory(Request $request)
     {
         if ($request->ajax()) {
+            if ($request->isMethod('get')) {
+                $perPage = $request->input('per_page', 10);
+                $query = CategoryPOI::query();
+    
+                if ($request->has('search')) {
+                    $searchTerm = $request->input('search');
+                    $query->where('nama_category', 'like', "%$searchTerm%");
+                }
+    
+                $categories = $query->paginate($perPage);
+    
+                return $this->jsonResponse(true, $categories, 200);
+            }
+    
             CategoryPOI::create([
                 'nama_category' => $request->nama_category,
             ]);
-
-            return $this->jsonResponse(true, 'Berhasil Menambah CategoryPOI.');
+    
+            return $this->jsonResponse(true, 'Berhasil Menambah Kategori Point Of Interest.');
         }
 
         $data = [
             'title' => 'Data Category Point Of Interest',
-            'categoryPOI' => CategoryPOI::all(),
         ];
         return view('page.dashboard.poiCategory', compact('data'));
     }
@@ -125,14 +166,6 @@ class POIController extends Controller
     public function poiCategoryDelete(Request $request, $id)
     {
         if ($request->ajax()) {
-            if (!CategoryPOI::find($id)) {
-                return $this->jsonResponse(false, 'Category Artikel not found.', 404);
-            }
-
-            if (!POI::find('category', $id)) {
-                return $this->jsonResponse(false, 'Cannot delete the category. It is being used by POI.', 400);
-            }
-
             $CategoryPOI = CategoryPOI::find($id);
             $CategoryPOI->delete();
 

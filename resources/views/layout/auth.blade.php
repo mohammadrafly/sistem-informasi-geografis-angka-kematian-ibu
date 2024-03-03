@@ -10,10 +10,10 @@
     @vite('resources/css/app.css')
 </head>
 <body>
-    <div class="bg-gray-200 h-dvh flex justify-center items-center">
+    <div class="bg-[#d8fbf7] h-dvh flex justify-center items-center">
         @yield('content')
     </div>
-    
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('assets/js/App.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>

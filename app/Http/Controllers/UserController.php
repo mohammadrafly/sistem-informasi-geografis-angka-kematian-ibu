@@ -8,7 +8,7 @@ use App\Models\User;
 
 class UserController extends Controller
 {
-    private function jsonResponse(bool $success, string $message, int $statusCode = 200)
+    private function jsonResponse($success, $message, $statusCode = 200)
     {
         return response()->json([
             'success' => $success,
@@ -19,6 +19,22 @@ class UserController extends Controller
     public function index(Request $request) 
     {
         if ($request->ajax()) {
+            if ($request->isMethod('get')) {
+                $perPage = $request->input('per_page', 10);
+                $query = User::query();
+    
+                if ($request->has('search')) {
+                    $searchTerm = $request->input('search');
+                    $query->where('name', 'like', "%$searchTerm%");
+                    $query->orWhere('email', 'like', "%$searchTerm%");
+                    $query->orWhere('role', 'like', "%$searchTerm%");
+                }
+    
+                $data = $query->paginate($perPage);
+    
+                return $this->jsonResponse(true, $data, 200);
+            }
+    
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -27,15 +43,14 @@ class UserController extends Controller
 
             return $this->jsonResponse(true, 'Berhasil Menambah User.');
         }
-
+        
         $data = [
-            'title' => 'Data User',
-            'users' => User::all(),
+            'title' => 'Data Pengguna',
         ];
         return view('page.dashboard.user', compact('data'));
     }
 
-    public function show(Request $request, int $id)
+    public function show(Request $request, $id)
     {
         if ($request->ajax()) {
             if (!User::find($id)) {
@@ -53,16 +68,13 @@ class UserController extends Controller
         }
     }
 
-    public function destroy(int $id)
+    public function destroy(Request $request, $id)
     {
-        $user = User::find($id);
+        if ($request->ajax()) {
+            $user = User::find($id);
+            $user->delete();
 
-        if (!$user) {
-            return $this->jsonResponse(false, 'User not found.', 404);
+            return $this->jsonResponse(true, 'Berhasil Menghapus category penyebab.');
         }
-
-        $user->delete();
-
-        return $this->jsonResponse(true, 'Berhasil Menghapus User.');
     }
 }

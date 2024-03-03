@@ -1,4 +1,4 @@
-<div class="bg-blue-900 min-w-[250px] shadow-lg" id="sidebar" data-toggle-sidebar>
+<div class="bg-[#046db9] min-w-[250px] shadow-lg" id="sidebar" data-toggle-sidebar>
     <div class="p-5">
         <div class="mb-10 flex justify-between">
             <div class="flex justify-center items-center">
@@ -23,7 +23,12 @@
         <div class="w-full h-[1px] bg-white mb-5"></div>
         <div class="text-white text-sm font-thin">
             <ul>
-                <li class="p-2 hover:bg-white hover:text-black rounded-lg">
+                <li class="p-2 rounded-lg 
+                    @if (Route::currentRouteName() == 'dashboard')
+                        bg-white text-black 
+                    @else 
+                        hover:bg-white hover:text-black 
+                    @endif">
                     <a class="flex" href="{{ route('dashboard') }}">
                         <svg class="w-5 h-5 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19c0 .6.4 1 1 1h3v-3c0-.6.4-1 1-1h2c.6 0 1 .4 1 1v3h3c.6 0 1-.4 1-1v-8.5"/>
@@ -33,7 +38,12 @@
                         </div>
                     </a>
                 </li>
-                <li class="p-2 hover:bg-white hover:text-black rounded-lg">
+                <li class="p-2 rounded-lg
+                    @if (Route::currentRouteName() == 'artikel')
+                        bg-white text-black 
+                    @else 
+                        hover:bg-white hover:text-black 
+                    @endif">
                     <a class="flex" href="{{ route('artikel') }}">
                         <svg class="w-5 h-5 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 4h3c.6 0 1 .4 1 1v15c0 .6-.4 1-1 1H6a1 1 0 0 1-1-1V5c0-.6.4-1 1-1h3m0 3h6m-3 5h3m-6 0h0m3 4h3m-6 0h0m1-13v4h4V3h-4Z"/>
@@ -43,7 +53,12 @@
                         </div>
                     </a>
                 </li>
-                <li class="p-2 hover:bg-white hover:text-black rounded-lg">
+                <li class="p-2 rounded-lg
+                    @if (Route::currentRouteName() == 'kasus' || Route::currentRouteName() == 'daerah' || Route::currentRouteName() == 'poi' || Route::currentRouteName() == 'user' || Route::currentRouteName() == 'kasus.category' || Route::currentRouteName() == 'poi.category' || Route::currentRouteName() == 'artikel.category')
+                        bg-white text-black 
+                    @else 
+                        hover:bg-white hover:text-black 
+                    @endif">
                     <button type="button" class="flex items-center w-full" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
                         <svg class="w-5 h-5 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 6c0 1.7-3.1 3-7 3S5 7.7 5 6m14 0c0-1.7-3.1-3-7-3S5 4.3 5 6m14 0v6M5 6v6m0 0c0 1.7 3.1 3 7 3s7-1.3 7-3M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>
@@ -54,30 +69,70 @@
                         </svg>
                     </button>
                     <ul id="dropdown-example" class="hidden py-2 space-y-2">
-                        <li class="hover:bg-blue-400 hover:text-white rounded-lg">
+                        <li class="rounded-lg 
+                        @if (Route::currentRouteName() == 'kasus')
+                            bg-[#046db9] text-white
+                        @else 
+                            hover:bg-[#046db9] hover:text-white
+                        @endif">
                             <a href="{{ route('kasus') }}" class="flex items-center w-full p-2">Data Kasus</a>
                         </li>
-                        <li class="hover:bg-blue-400 hover:text-white rounded-lg">
+                        <li class="rounded-lg
+                        @if (Route::currentRouteName() == 'daerah')
+                            bg-[#046db9] text-white
+                        @else 
+                            hover:bg-[#046db9] hover:text-white
+                        @endif">
                             <a href="{{ route('daerah') }}" class="flex items-center w-full p-2">Data Daerah</a>
                         </li>
-                        <li class="hover:bg-blue-400 hover:text-white rounded-lg">
+                        <li class="rounded-lg
+                        @if (Route::currentRouteName() == 'poi')
+                            bg-[#046db9] text-white
+                        @else 
+                            hover:bg-[#046db9] hover:text-white
+                        @endif">
                             <a href="{{ route('poi') }}" class="flex items-center w-full p-2">Data Point Of Interest</a>
                         </li>
-                        <li class="hover:bg-blue-400 hover:text-white rounded-lg">
+                        <li class="rounded-lg
+                        @if (Route::currentRouteName() == 'user')
+                            bg-[#046db9] text-white
+                        @else 
+                            hover:bg-[#046db9] hover:text-white
+                        @endif">
                             <a href="{{ route('user') }}" class="flex items-center w-full p-2">Data Pengguna</a>
                         </li>
-                        <li class="hover:bg-blue-400 hover:text-white rounded-lg">
-                            <a href="{{ route('artikel.category') }}" class="flex items-center w-full p-2">Data Category Artikel</a>
+                        <li class="rounded-lg
+                        @if (Route::currentRouteName() == 'artikel.category')
+                            bg-[#046db9] text-white
+                        @else 
+                            hover:bg-[#046db9] hover:text-white
+                        @endif">
+                            <a href="{{ route('artikel.category') }}" class="flex items-center w-full p-2">Data Kategori Artikel</a>
                         </li>
-                        <li class="hover:bg-blue-400 hover:text-white rounded-lg">
-                            <a href="{{ route('poi.category') }}" class="flex items-center w-full p-2">Data Category POI</a>
+                        <li class="rounded-lg
+                        @if (Route::currentRouteName() == 'poi.category')
+                            bg-[#046db9] text-white
+                        @else 
+                            hover:bg-[#046db9] hover:text-white
+                        @endif">
+                            <a href="{{ route('poi.category') }}" class="flex items-center w-full p-2">Data Kategori Point Of Interest</a>
                         </li>
-                        <li class="hover:bg-blue-400 hover:text-white rounded-lg">
-                            <a href="{{ route('kasus.category') }}" class="flex items-center w-full p-2">Data Category Penyebab</a>
+                        <li class="rounded-lg
+                        @if (Route::currentRouteName() == 'kasus.category')
+                            bg-[#046db9] text-white
+                        @else 
+                            hover:bg-[#046db9] hover:text-white
+                        @endif">
+                            <a href="{{ route('kasus.category') }}" class="flex items-center w-full p-2">Data Kategori Penyebab Kasus</a>
                         </li>
                     </ul>
                 </li>
-                <li class="p-2 hover:bg-white hover:text-black rounded-lg">
+                <li class="p-2 rounded-lg
+                    @if (Route::currentRouteName() == 'profile')
+                        bg-white text-black 
+                    @else 
+                        hover:bg-white hover:text-black 
+                    @endif">
                     <a class="flex" href="{{ route('profile', Auth::user()->id) }}">
                         <svg class="w-5 h-5 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 9h3m-3 3h3m-3 3h3m-6 1c-.3-.6-1-1-1.6-1H7.6c-.7 0-1.3.4-1.6 1M4 5h16c.6 0 1 .4 1 1v12c0 .6-.4 1-1 1H4a1 1 0 0 1-1-1V6c0-.6.4-1 1-1Zm7 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>

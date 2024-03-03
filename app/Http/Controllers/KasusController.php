@@ -31,9 +31,34 @@ class KasusController extends Controller
     public function kasus(Request $request)
     {
         if ($request->ajax()) {
+            if ($request->isMethod('get')) {
+                $perPage = $request->input('per_page', 10);
+                $query = Kasus::query();
+    
+                $query->leftJoin('category_penyebab', 'kasus.id_category', '=', 'category_penyebab.id');
+          
+                if ($request->has('search')) {
+                    $searchTerm = $request->input('search');
+                    $query->where('kasus.alamat', 'like', "%$searchTerm%")
+                          ->orWhere('kasus.usia_ibu', 'like', "%$searchTerm%")
+                          ->orWhere('kasus.tanggal', 'like', "%$searchTerm%")
+                          ->orWhere('kasus.tempat_kematian', 'like', "%$searchTerm%")
+                          ->orWhere('kasus.estafet_rujukan', 'like', "%$searchTerm%")
+                          ->orWhere('kasus.alur', 'like', "%$searchTerm%")
+                          ->orWhere('category_penyebab.nama_category', 'like', "%$searchTerm%")
+                          ->orWhere('kasus.masa_kematian', 'like', "%$searchTerm%")
+                          ->orWhere('kasus.hari_kematian', 'like', "%$searchTerm%")
+                          ->orWhere('kasus.bukti_kematian', 'like', "%$searchTerm%");
+                }
+    
+                $data = $query->select('kasus.*', 'kasus.id as id', 'category_penyebab.nama_category as nama_kategori')
+                              ->paginate($perPage);
+                            
+                return $this->jsonResponse(true, $data, 200);
+            }
 
             $bukti_kematian = $this->handleFileUpload($request);
-
+            
             Kasus::create([
                 'alamat' => $request->alamat,
                 'usia_ibu' => $request->usia_ibu,
@@ -52,7 +77,7 @@ class KasusController extends Controller
 
         $data = [
             'title' => 'Data Kasus',
-            'kasus' => Kasus::all(),
+            'penyebab' => CategoryPenyebab::all(),
         ];
         return view('page.dashboard.kasus', compact('data'));
     }
@@ -72,6 +97,7 @@ class KasusController extends Controller
             $kasus->update($request->only(['alamat', 'usia_ibu', 'tanggal', 'id_category', 'tempat_kematian', 'estafet_rujukan', 'alur', 'masa_kematian', 'hari_kematian']));
     
             $bukti_kematian = $this->handleFileUpload($request);
+            
             if ($bukti_kematian) {
                 $kasus->bukti_kematian = $bukti_kematian;
                 $kasus->save();
@@ -84,13 +110,8 @@ class KasusController extends Controller
     public function kasusDelete(Request $request, $id)
     {
         if ($request->ajax()) {
-            if (!Kasus::find($id)) {
-                return $this->jsonResponse(false, 'Kasus not found.', 404);
-            }
-
             $kasus = Kasus::find($id);
             $kasus->delete();
-
             return $this->jsonResponse(true, 'Berhasil Menghapus Kasus.');
         }
     }
@@ -98,16 +119,29 @@ class KasusController extends Controller
     public function kasusCategory(Request $request)
     {
         if ($request->ajax()) {
+            if ($request->isMethod('get')) {
+                $perPage = $request->input('per_page', 10);
+                $query = CategoryPenyebab::query();
+    
+                if ($request->has('search')) {
+                    $searchTerm = $request->input('search');
+                    $query->where('nama_category', 'like', "%$searchTerm%");
+                }
+    
+                $categories = $query->paginate($perPage);
+    
+                return $this->jsonResponse(true, $categories, 200);
+            }
+    
             CategoryPenyebab::create([
                 'nama_category' => $request->nama_category,
             ]);
-
-            return $this->jsonResponse(true, 'Berhasil Menambah Category Penyebab.');
+    
+            return $this->jsonResponse(true, 'Berhasil Menambah Kategori Penyebab.');
         }
 
         $data = [
-            'title' => 'Data Category Penyebab',
-            'category Penyebab' => CategoryPenyebab::all(),
+            'title' => 'Data Category Penyebab Kasus',
         ];
         return view('page.dashboard.kasusCategory', compact('data'));
     }
@@ -133,14 +167,6 @@ class KasusController extends Controller
     public function kasusCategoryDelete(Request $request, $id)
     {
         if ($request->ajax()) {
-            if (!CategoryPenyebab::find($id)) {
-                return $this->jsonResponse(false, 'category penyebab not found.', 404);
-            }
-
-            if (!Kasus::find('category', $id)) {
-                return $this->jsonResponse(false, 'Cannot delete the category. It is being used by articles.', 400);
-            }
-
             $CategoryPenyebab = CategoryPenyebab::find($id);
             $CategoryPenyebab->delete();
 

@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Daerah;
 
 class DaerahController extends Controller
 {
-    private function jsonResponse(bool $success, string $message, int $statusCode = 200)
+    private function jsonResponse($success, $message, $statusCode = 200)
     {
         return response()->json([
             'success' => $success,
@@ -16,60 +15,83 @@ class DaerahController extends Controller
         ], $statusCode);
     }
 
+    private function handleFileUpload(Request $request)
+    {
+        if ($request->hasFile('geojson')) {
+            $geojson = $request->file('geojson');
+            $fileName = time() . '.' . $geojson->getClientOriginalExtension();
+            $geojson->move(public_path('geojsons'), $fileName);
+            return $fileName;
+        }
+        return null;
+    }
+
     public function daerah(Request $request)
     {
-        if (!$request->ajax()) {
-            $data = [
-                'title' => 'Data Daerah',
-                'daerah' => Daerah::all(),
-            ];
-            return view('page.dashboard.daerah', compact('data'));
+        if ($request->ajax()) {
+            if ($request->isMethod('get')) {
+                $perPage = $request->input('per_page', 10);
+                $query = Daerah::query();
+
+                if ($request->has('search')) {
+                    $searchTerm = $request->input('search');
+                    $query->where('nama_daerah', 'like', "%$searchTerm%")
+                            ->orWhere('geojson', 'like', "%$searchTerm%")
+                            ->orWhere('warna', 'like', "%$searchTerm%");
+                }
+            
+                $data = $query->paginate($perPage);
+      
+                return $this->jsonResponse(true, $data, 200);
+            }
+
+            $geojson = $this->handleFileUpload($request);
+
+            Daerah::create([
+                'nama_daerah' => $request->nama_daerah,
+                'geojson' => $geojson,
+                'warna' => $request->warna,
+            ]);
+    
+            return $this->jsonResponse(true, 'Berhasil Menambah Daerah.');
         }
 
-        $daerah = Daerah::create($request->only('nama_daerah', 'warna'));
-
-        if ($request->hasFile('geojson')) {
-            $fileName = time() . '.' . $request->geojson->getClientOriginalExtension();
-            $path = Storage::disk('local')->put('geojsons', $request->geojson, $fileName); // Use Storage facade
-            $daerah->geojson = $path;
-            $daerah->save();
-        }
-
-        return $this->jsonResponse(true, 'Berhasil Menambah Daerah.');
+        $data = [
+            'title' => 'Data Daerah',
+        ];
+        return view('page.dashboard.daerah', compact('data'));
     }
 
     public function daerahSingle(Request $request, int $id)
     {
-        if (!$request->ajax() || !Daerah::find($id)) {
-            return $this->jsonResponse(false, 'Daerah not found.', 404);
+        if ($request->ajax()) {
+            if (!$request->ajax()) {
+                return $this->jsonResponse(false, 'Daerah not found.', 404);
+            }
+    
+            if ($request->isMethod('get')) {
+                return $this->jsonResponse(true, Daerah::find($id), 200);
+            }
+    
+            $daerah = Daerah::find($id);
+            $daerah->update($request->only(['nama_daerah', 'warna']));
+    
+            $geojson = $this->handleFileUpload($request);
+    
+            if ($geojson) {
+                $daerah->geojson = $geojson;
+                $daerah->save();
+            }
+    
+            return $this->jsonResponse(true, 'Berhasil Memperbarui Daerah.');
         }
-
-        if ($request->isMethod('get')) {
-            return $this->jsonResponse(true, Daerah::find($id), 200);
-        }
-
-        $daerah = Daerah::find($id);
-        $daerah->update($request->only(['nama_daerah', 'warna']));
-
-        if ($request->hasFile('geojson')) {
-            $fileName = time() . '.' . $request->geojson->getClientOriginalExtension();
-            $path = Storage::disk('local')->put('geojsons', $request->geojson, $fileName); // Use Storage facade
-            $daerah->geojson = $path;
-        }
-
-        $daerah->save();
-
-        return $this->jsonResponse(true, 'Berhasil Memperbarui Daerah.');
     }
 
     public function daerahDelete(Request $request, int $id)
     {
-        if (!$request->ajax() || !Daerah::find($id)) {
-            return $this->jsonResponse(false, 'Daerah not found.', 404);
+        if ($request->ajax()) {
+            Daerah::find($id)->delete();
+            return $this->jsonResponse(true, 'Berhasil Menghapus Daerah.');
         }
-
-        Daerah::find($id)->delete();
-
-        return $this->jsonResponse(true, 'Berhasil Menghapus Daerah.');
     }
 }

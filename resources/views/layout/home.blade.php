@@ -11,8 +11,8 @@
 </head>
 <body>
     @include('layout.partials.navbar')
-    <div class="bg-gray-100">
-        <div class="lg:mx-96 min-h-screen py-10">
+    <div class="bg-[#d8fbf7]">
+        <div class="lg:mx-80 md:mx-24 sm:mx-10 min-h-screen py-10">
             @yield('content')
         </div>
     </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Artikel;
 use App\Models\CategoryArtikel;
+use Illuminate\Support\Facades\Auth;
 
 class ArtikelController extends Controller
 {
@@ -30,15 +31,36 @@ class ArtikelController extends Controller
     public function artikel(Request $request)
     {
         if ($request->ajax()) {
-
+            if ($request->isMethod('get')) {
+                $perPage = $request->input('per_page', 10);
+                $query = Artikel::query();
+                
+                $query->leftJoin('users', 'artikel.author', '=', 'users.id')
+                      ->leftJoin('category_artikel', 'artikel.id_category', '=', 'category_artikel.id');
+                
+                if ($request->has('search')) {
+                    $searchTerm = $request->input('search');
+                    $query->where('artikel.title', 'like', "%$searchTerm%")
+                          ->orWhere('users.name', 'like', "%$searchTerm%")
+                          ->orWhere('artikel.description', 'like', "%$searchTerm%")
+                          ->orWhere('category_artikel.nama_category', 'like', "%$searchTerm%")
+                          ->orWhere('artikel.published', 'like', "%$searchTerm%");
+                }
+            
+                $data = $query->select('artikel.*', 'users.name as author_name', 'category_artikel.nama_category as category_name')
+                              ->paginate($perPage);
+            
+                return $this->jsonResponse(true, $data, 200);
+            }
+    
             $img = $this->handleFileUpload($request);
 
             Artikel::create([
                 'title' => $request->title,
-                'author' => $request->author,
+                'author' => Auth::user()->id,
                 'img' => $img,
                 'description' => $request->description,
-                'category' => $request->category,
+                'id_category' => $request->id_category,
                 'published' => $request->published,
             ]);
 
@@ -47,7 +69,7 @@ class ArtikelController extends Controller
 
         $data = [
             'title' => 'Data Artikel',
-            'artikel' => Artikel::all(),
+            'category' => CategoryArtikel::all(),
         ];
         return view('page.dashboard.artikel', compact('data'));
     }
@@ -64,7 +86,7 @@ class ArtikelController extends Controller
             }
     
             $artikel = Artikel::find($id);
-            $artikel->update($request->only(['title', 'author', 'description', 'category', 'published']));
+            $artikel->update($request->only(['title', 'author', 'description', 'id_category', 'published']));
     
             $img = $this->handleFileUpload($request);
             if ($img) {
@@ -79,13 +101,8 @@ class ArtikelController extends Controller
     public function artikelDelete(Request $request, $id)
     {
         if ($request->ajax()) {
-            if (!Artikel::find($id)) {
-                return $this->jsonResponse(false, 'Artikel not found.', 404);
-            }
-
             $artikel = Artikel::find($id);
             $artikel->delete();
-
             return $this->jsonResponse(true, 'Berhasil Menghapus Artikel.');
         }
     }
@@ -93,16 +110,29 @@ class ArtikelController extends Controller
     public function artikelCategory(Request $request)
     {
         if ($request->ajax()) {
+            if ($request->isMethod('get')) {
+                $perPage = $request->input('per_page', 10);
+                $query = CategoryArtikel::query();
+    
+                if ($request->has('search')) {
+                    $searchTerm = $request->input('search');
+                    $query->where('nama_category', 'like', "%$searchTerm%");
+                }
+    
+                $categories = $query->paginate($perPage);
+    
+                return $this->jsonResponse(true, $categories, 200);
+            }
+    
             CategoryArtikel::create([
                 'nama_category' => $request->nama_category,
             ]);
-
+    
             return $this->jsonResponse(true, 'Berhasil Menambah Kategori Artikel.');
         }
-
+    
         $data = [
             'title' => 'Data Kategori Artikel',
-            'categoryArtikel' => CategoryArtikel::all(),
         ];
         return view('page.dashboard.artikelCategory', compact('data'));
     }
@@ -128,14 +158,6 @@ class ArtikelController extends Controller
     public function artikelCategoryDelete(Request $request, $id)
     {
         if ($request->ajax()) {
-            if (!CategoryArtikel::find($id)) {
-                return $this->jsonResponse(false, 'Kategori Artikel not found.', 404);
-            }
-
-            if (!Artikel::find('category', $id)) {
-                return $this->jsonResponse(false, 'Cannot delete the category. It is being used by articles.', 400);
-            }
-
             $CategoryArtikel = CategoryArtikel::find($id);
             $CategoryArtikel->delete();
 

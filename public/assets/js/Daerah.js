@@ -89,7 +89,7 @@ function populateTable(response) {
         var row = $('<tr>').addClass('bg-white border-b');
         row.append($('<td>').addClass('px-6 py-4').text(index + 1));
         row.append($('<td>').addClass('px-6 py-4').text(daerah.nama_daerah));
-        row.append($('<td>').addClass('px-6 py-4').text(daerah.geojson)); 
+        row.append($('<td>').addClass('px-6 py-4').text(daerah.geojson.substring(0, 20) + (daerah.geojson.length > 20 ? '...' : ''))); 
         row.append($('<td>').addClass('px-6 py-4').text(daerah.warna));
         var editButton = $('<button>')
             .addClass('font-medium text-white bg-blue-600 py-1 px-2 rounded-lg hover:underline')

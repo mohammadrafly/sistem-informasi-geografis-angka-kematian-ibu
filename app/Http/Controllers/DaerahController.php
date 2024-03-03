@@ -32,13 +32,9 @@ class DaerahController extends Controller
                 }
             }
     
-            $jsContent = 'const geojson = ' . json_encode($coordinates, JSON_PRETTY_PRINT) . ';';
-            
-            $filename = 'coordinates_' . time() . '.js';
-            
-            file_put_contents(public_path('geojsons') . '/' . $filename, $jsContent);
-            
-            return $filename;
+            $jsContent = json_encode($coordinates, JSON_PRETTY_PRINT);
+
+            return $jsContent;
         }
         return null;
     }    

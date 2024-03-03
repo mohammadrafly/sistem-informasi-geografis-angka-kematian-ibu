@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\POI;
 use App\Models\CategoryPOI;
+use App\Models\Daerah;
 use App\Models\Kasus;
 
 class POIController extends Controller
@@ -21,13 +22,31 @@ class POIController extends Controller
     {
         if ($request->hasFile('geojson')) {
             $geojson = $request->file('geojson');
-            $fileName = time() . '.' . $geojson->getClientOriginalExtension();
-            $geojson->move(public_path('geojsons'), $fileName);
-            return $fileName;
+            
+            $content = file_get_contents($geojson->getPathname());
+            
+            $data = json_decode($content, true);
+            
+            $coordinates = [];
+            foreach ($data['features'] as $feature) {
+                if (isset($feature['geometry']['coordinates'])) {
+                    $coordinates = array_merge($coordinates, $feature['geometry']['coordinates']);
+                }
+            }
+    
+            $jsContent = json_encode($coordinates, JSON_PRETTY_PRINT);
+
+            return $jsContent;
         }
         return null;
-    }
+    }    
     
+    public function getPOI()
+    {
+        $data = POI::all();
+        return $this->jsonResponse(true, $data, 200);
+    }
+
     public function poi(Request $request)
     {
         if ($request->ajax()) {
@@ -72,6 +91,8 @@ class POIController extends Controller
             'title' => 'Data Point Of Interest',
             'category' => CategoryPOI::all(),
             'kasus' => Kasus::whereNotIn('id', $existingIds)->get(),
+            'daerah' => Daerah::all(),
+            'poi' => POI::all(),
         ];
 
         return view('page.dashboard.poi', compact('data'));

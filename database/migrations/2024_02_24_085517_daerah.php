@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('daerah', function (Blueprint $table) {
             $table->id();
             $table->string('nama_daerah');
-            $table->string('geojson');
+            $table->text('geojson');
             $table->string('warna');
             $table->timestamps();
         });

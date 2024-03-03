@@ -86,55 +86,56 @@
 
 @section('script')
 
-@foreach ($data['daerah'] as $item)
-<script src="{{ asset('geojsons/'.$item->geojson) }}"></script>
-@endforeach
-
 <script>
-function getGeojson() {
-    $.ajax({
-        url: BASEURL + 'dashboard/daerah/get-daerah',
-        success: function(data) {
-            var map = L.map('map').setView([-8.1805, 113.6856], 13);
+    var map = L.map('map').setView([-8.1805, 113.6856], 13);
 
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            }).addTo(map);
-            var dataArray = data.message;
-            dataArray.forEach(function(featureData) {
-                var Daerah = {
-                    "type": "FeatureCollection",
-                    "features": [
-                        {
-                            "type": "Feature",
-                            "properties": {},
-                            "geometry": {
-                                "coordinates": geojson,
-                                "type": "Polygon"
-                            }
-                        }
-                    ]
-                };
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
 
-                var LayerDaerah = L.geoJSON(Daerah, {
-                    style: {
-                        fillColor: featureData.warna,
-                        color: featureData.warna,
-                        weight: 2
+    function createGeoJSONFeature(coordinates) {
+        return {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "coordinates": coordinates,
+                        "type": coordinates.length === 2 ? "Point" : "Polygon"
                     }
-                }).addTo(map);
-            });
-        },
-        error: function(xhr, status, error) {
-            console.error('Error fetching GeoJSON:', error);
-        }
-    });
-}
+                }
+            ]
+        };
+    }
 
-$(document).ready(function() {
-    getGeojson();
-});
+    function getGeojson() {
+        $.ajax({
+            url: BASEURL + 'dashboard/daerah/get-daerah',
+            success: function(data) {
+                var dataArray = data.message;
+                dataArray.forEach(function(featureData) {
+                    var Daerah = createGeoJSONFeature(JSON.parse(featureData.geojson.replace(/"/g, '')),);
+
+                    var LayerDaerah = L.geoJSON(Daerah, {
+                        style: {
+                            fillColor: featureData.warna,
+                            color: featureData.warna,
+                            weight: 2
+                        }
+                    }).addTo(map);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching GeoJSON:', error);
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        getGeojson();
+    });
 </script>
 
 <script src="{{ asset('assets/js/Daerah.js') }}"></script>

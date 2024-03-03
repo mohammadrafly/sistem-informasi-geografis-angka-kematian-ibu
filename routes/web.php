@@ -75,6 +75,7 @@ Route::middleware(['auth'])->group(function () {
         });
         Route::controller(POIController::class)->group(function () {
             Route::prefix('poi')->group(function (){
+                Route::get('/get-poi', 'getPOI')->name('get.poi');
                 Route::match(['GET','POST'], '/', 'poi')->name('poi');
                 Route::match(['GET','POST'], '/update/{id}', 'poiSingle')->name('poi.single');
                 Route::match(['GET'], '/delete/{id}', 'poiDelete')->name('poi.delete');

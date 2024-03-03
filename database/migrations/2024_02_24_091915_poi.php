@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('poi', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_titik')->null();
-            $table->foreignId('id_kasus')->constraint('kasus')->null();
-            $table->string('geojson');
+            $table->string('nama_titik')->nullable();
+            $table->foreignId('id_kasus')->nullable()->constraint('kasus');
+            $table->text('geojson');
             $table->foreignId('id_category')->constraint('category_poi');
             $table->string('warna');
             $table->timestamps();

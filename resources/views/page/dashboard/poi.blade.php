@@ -21,7 +21,7 @@
         <div class="mb-4">
             <label for="id_kasus" class="block text-gray-700 text-sm font-bold mb-2">Kasus</label>
             <select type="text" class="disabled:bg-gray-300 w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="id_kasus" id="id_kasus" placeholder="Kasus" required>
-                <option selected>Pilih Kasus</option>
+                <option selected value="">Pilih Kasus</option>
                 @foreach($data['kasus'] as $option)
                 <option value="{{ $option->id }}">{{ $option->alamat }}</option>
                 @endforeach
@@ -102,11 +102,89 @@
     </nav>
 </div>
 
+<div class="my-10 bg-white rounded-lg p-5 shadow-xl">
+    <div id="map" class="w-full h-96"></div>
+</div>
 
 @endSection()
 
 @section('script')
 
+<script>
+    var map = L.map('map').setView([-8.1805, 113.6856], 13);
+    
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    function createGeoJSONFeature(coordinates) {
+        return {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "coordinates": coordinates,
+                        "type": coordinates.length === 2 ? "Point" : "Polygon"
+                    }
+                }
+            ]
+        };
+    }
+
+    function getGeojsonDaerah() {
+        $.ajax({
+            url: BASEURL + 'dashboard/daerah/get-daerah',
+            success: function(data) {
+                var dataArray = data.message;
+                dataArray.forEach(function(featureData) {
+                    var Daerah = createGeoJSONFeature(JSON.parse(featureData.geojson.replace(/"/g, '')),);
+
+                    var LayerDaerah = L.geoJSON(Daerah, {
+                        style: {
+                            fillColor: featureData.warna,
+                            color: featureData.warna,
+                            weight: 2
+                        }
+                    }).addTo(map);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching GeoJSON:', error);
+            }
+        });
+    }
+
+    function getGeojsonPoi() {
+        $.ajax({
+            url: BASEURL + 'dashboard/poi/get-poi',
+            success: function(data) {
+                var dataArray = data.message;
+                dataArray.forEach(function(featureData) {
+                    var Poi = createGeoJSONFeature(JSON.parse(featureData.geojson.replace(/"/g, '')),);
+
+                    var LayerPoi = L.geoJSON(Poi, {
+                        style: {
+                            fillColor: featureData.warna,
+                            color: featureData.warna,
+                            weight: 2
+                        }
+                    }).addTo(map);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching GeoJSON:', error);
+            }
+        });
+    }
+    
+    $(document).ready(function() {
+        getGeojsonDaerah();
+        getGeojsonPoi();
+    });
+</script>
 <script src="{{ asset('assets/js/POI.js') }}"></script>
 
 @endSection()

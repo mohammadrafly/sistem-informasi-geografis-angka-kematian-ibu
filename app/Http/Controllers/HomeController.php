@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Artikel;
+use App\Models\CategoryArtikel;
 use App\Models\Daerah;
 use App\Models\POI;
 
@@ -23,6 +24,7 @@ class HomeController extends Controller
         $data = [
             'title' => 'Artikel',
             'artikel' => Artikel::all(),
+            'category' => CategoryArtikel::all(),
         ];
         return view('page.home.artikel', compact('data'));
     }
@@ -31,7 +33,7 @@ class HomeController extends Controller
     {
         $data = [
             'title' => 'Artikel',
-            'artikel' => Artikel::find($id),
+            'artikel' => Artikel::with('user', 'category')->find($id),
         ];
         return view('page.home.artikelSingle', compact('data'));
     }
@@ -39,8 +41,8 @@ class HomeController extends Controller
     public function artikelCategoryHome(Request $request, $id)
     {
         $data = [
-            'title' => 'Artikel',
-            'artikel' => Artikel::with('category')->where('category', $id)->get(),
+            'title' => CategoryArtikel::find($id)->nama_category,
+            'artikel' => Artikel::with('user', 'category')->where('id_category', $id)->get(),
         ];
         return view('page.home.artikelCategory', compact('data'));
     }

@@ -12,15 +12,15 @@
 <body>
     @include('layout.partials.navbar')
     <div class="bg-[#d8fbf7]">
-        <div class="lg:mx-80 md:mx-24 sm:mx-10 min-h-screen py-10">
+        <div class="lg:mx-96 md:mx-24 sm:mx-10 min-h-screen py-10">
             @yield('content')
         </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('assets/js/App.js') }}"></script>
+    @vite('resources/js/app.js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
-
     @yield('script')
 </body>
 </html>

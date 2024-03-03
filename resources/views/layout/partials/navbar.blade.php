@@ -2,7 +2,9 @@
     <div class="lg:mx-80 md:mx-24 sm:mx-10 h-20 flex items-center">
         <div class="flex justify-between w-full text-white">
             <div class="text-3xl font-bold">
-                {{ config('app.name') }}
+                <a href="{{ route('home') }}">
+                    {{ config('app.name') }}
+                </a>
             </div>
             <div class="flex items-center">
                 <ul class="flex">

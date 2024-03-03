@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Daerah;
+use Faker\Core\Coordinates;
 
 class DaerahController extends Controller
 {
@@ -27,21 +28,21 @@ class DaerahController extends Controller
             $coordinates = [];
             foreach ($data['features'] as $feature) {
                 if (isset($feature['geometry']['coordinates'])) {
-                    $coordinates[] = $feature['geometry']['coordinates'];
+                    $coordinates = array_merge($coordinates, $feature['geometry']['coordinates']);
                 }
             }
     
             $jsContent = 'const geojson = ' . json_encode($coordinates, JSON_PRETTY_PRINT) . ';';
-    
+            
             $filename = 'coordinates_' . time() . '.js';
-    
+            
             file_put_contents(public_path('geojsons') . '/' . $filename, $jsContent);
-    
+            
             return $filename;
         }
         return null;
-    }
-    
+    }    
+
     public function getDaerah()
     {
         $data = Daerah::all();

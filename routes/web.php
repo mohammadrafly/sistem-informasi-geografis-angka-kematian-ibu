@@ -31,7 +31,8 @@ Route::middleware(['guest'])->group(function () {
         });
         Route::prefix('peta')->group(function (){
             Route::match(['GET'], '/resiko', 'peta')->name('peta');
-            Route::match(['GET'], '/resiko/map', 'petaResiko')->name('petaResiko');
+            Route::match(['GET'], '/resiko/get-daerah', 'getDaerah')->name('home.get.daerah');
+            Route::match(['GET'], '/resiko/get-poi', 'getPOI')->name('home.get.poi');
         });
     });
     Route::controller(AuthController::class)->group(function () {

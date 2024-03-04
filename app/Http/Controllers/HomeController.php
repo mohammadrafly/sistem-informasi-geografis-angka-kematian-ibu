@@ -10,6 +10,14 @@ use App\Models\POI;
 
 class HomeController extends Controller
 {    
+    private function jsonResponse($success, $message, $statusCode = 200)
+    {
+        return response()->json([
+            'success' => $success,
+            'message' => $message
+        ], $statusCode);
+    }
+
     public function index()
     {
         $data = [
@@ -55,13 +63,15 @@ class HomeController extends Controller
         return view('page.home.peta', compact('data'));
     }
     
-    public function petaResiko(Request $request)
+    public function getPOI()
     {
-        if ($request->ajax()) {
-            return response()->json([
-                'petaResiko' => Daerah::all(),
-                'petaPoint' => POI::all(),
-            ]);
-        }
+        $data = POI::all();
+        return $this->jsonResponse(true, $data, 200);
+    }
+
+    public function getDaerah()
+    {
+        $data = Daerah::all();
+        return $this->jsonResponse(true, $data, 200);
     }
 }

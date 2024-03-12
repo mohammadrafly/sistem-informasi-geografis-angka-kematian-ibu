@@ -12,8 +12,8 @@
                 DINKES
             </div>
         </div>
-        <div class="my-10 rounded-lg p-5 shadow-xl">
-            <div id="map" class="w-full h-96"></div>
+        <div id="map" class="w-full h-96 rounded-lg m-5">
+
         </div>
     </div>
 </div>

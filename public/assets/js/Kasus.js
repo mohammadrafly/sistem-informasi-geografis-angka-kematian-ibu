@@ -88,6 +88,7 @@ function populateTable(response) {
         console.log(kasus)
         var row = $('<tr>').addClass('bg-white border-b');
         row.append($('<td>').addClass('px-6 py-4').text(index + 1));
+        row.append($('<td>').addClass('px-6 py-4').text(kasus.nama));
         row.append($('<td>').addClass('px-6 py-4').text(kasus.alamat));
         row.append($('<td>').addClass('px-6 py-4').text(kasus.usia_ibu));
         row.append($('<td>').addClass('px-6 py-4').text(kasus.tanggal));
@@ -121,27 +122,51 @@ function populateTable(response) {
 }
 
 function saveKasus() {
-        const id = $('#id').val();
-        const formData = new FormData($('#kasusForm')[0]);
+    const id = $('#id').val();
+    const pilihMasa = $('#pilih_masa').val();
+    const formData = new FormData($('#kasusForm')[0]);
 
-        $.ajax({
-            url: BASEURL + `dashboard/kasus${id ? '/update/' + id : ''}`,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                console.log(response);
-                $('#kasusForm')[0].reset();
-                alert('Kasus saved successfully!');
-                fetchData();
-            },
-            error: function(xhr, status, error) {
-                console.error(xhr.responseText);
-                alert('Failed to save kasus. Please try again later.');
-            }
-        });
+    if (pilihMasa === 'hamil') {
+        const data = $('#umur_kehamilan').val();
+        formData.append('masa_kematian', data);
+    } else if (pilihMasa === 'persalinan') {
+        const data = '< 6 Jam PP';
+        formData.append('masa_kematian', data);
+    } else if (pilihMasa === 'nifas') {
+        const nifas = $('#nifas').val();
+        if (nifas === '0') {
+            const data = '6-24 Jam PP';
+            formData.append('masa_kematian', data);
+        } else if (nifas === '1') {
+            const data = '1-3 Hari PP';
+            formData.append('masa_kematian', data);
+        } else if (nifas === '2') {
+            const data = '4-28 Hari PP';
+            formData.append('masa_kematian', data);
+        } else {
+            const data = '28-42 Hari PP';
+            formData.append('masa_kematian', data);
+        }
     }
+
+    $.ajax({
+        url: BASEURL + `dashboard/kasus${id ? '/update/' + id : ''}`,
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            console.log(response);
+            $('#kasusForm')[0].reset();
+            alert('Kasus saved successfully!');
+            fetchData();
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+            alert('Failed to save kasus. Please try again later.');
+        }
+    });
+}
 
 function editKasus(kasusId) {
     ajaxRequest('dashboard/kasus/update/' + kasusId, 'GET', '',
@@ -151,6 +176,7 @@ function editKasus(kasusId) {
                 $('#kasusForm')[0].reset();
                 toggleCollapse('form');
                 $('#id').val(response.message.id);
+                $('#nama').val(response.message.nama);
                 $('#alamat').val(response.message.alamat);
                 $('#usia_ibu').val(response.message.usia_ibu);
                 $('#tanggal').val(response.message.tanggal);

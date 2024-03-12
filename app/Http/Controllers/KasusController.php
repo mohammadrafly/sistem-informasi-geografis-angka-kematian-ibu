@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CategoryPenyebab;
 use App\Models\Kasus;
-use App\Models\POI;
 
 class KasusController extends Controller
 {
@@ -40,6 +39,7 @@ class KasusController extends Controller
                 if ($request->has('search')) {
                     $searchTerm = $request->input('search');
                     $query->where('kasus.alamat', 'like', "%$searchTerm%")
+                          ->orWhere('kasus.nama', 'like', "%$searchTerm%")
                           ->orWhere('kasus.usia_ibu', 'like', "%$searchTerm%")
                           ->orWhere('kasus.tanggal', 'like', "%$searchTerm%")
                           ->orWhere('kasus.tempat_kematian', 'like', "%$searchTerm%")
@@ -60,6 +60,7 @@ class KasusController extends Controller
             $bukti_kematian = $this->handleFileUpload($request);
             
             Kasus::create([
+                'nama' => $request->nama,
                 'alamat' => $request->alamat,
                 'usia_ibu' => $request->usia_ibu,
                 'tanggal' => $request->tanggal,
@@ -94,7 +95,7 @@ class KasusController extends Controller
             }
     
             $kasus = Kasus::find($id);
-            $kasus->update($request->only(['alamat', 'usia_ibu', 'tanggal', 'id_category', 'tempat_kematian', 'estafet_rujukan', 'alur', 'masa_kematian', 'hari_kematian']));
+            $kasus->update($request->only(['nama', 'alamat', 'usia_ibu', 'tanggal', 'id_category', 'tempat_kematian', 'estafet_rujukan', 'alur', 'masa_kematian', 'hari_kematian']));
     
             $bukti_kematian = $this->handleFileUpload($request);
             

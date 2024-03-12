@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="my-10 rounded-lg">
-    <div id="map" class="w-full min-h-screen"></div>
+    <div id="map" class="w-full min-h-screen rounded-lg"></div>
 </div>
 
 @endSection()

@@ -14,9 +14,13 @@
     <form id="kasusForm" enctype="multipart/form-data" class="mt-4">
         @csrf
         <div class="mb-4">
+            <label for="usia_ibu" class="block text-gray-700 text-sm font-bold mb-2">Nama Istri/Suami</label>
+            <input type="text" class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="nama" id="nama" placeholder="Masukkan Usia Ibu" required>
+            <input type="number" name="id" id="id" hidden>
+        </div>
+        <div class="mb-4">
             <label for="alamat" class="block text-gray-700 text-sm font-bold mb-2">Alamat</label>
             <input type="text" class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="alamat" id="alamat" placeholder="Masukkan Alamat" required>
-            <input type="number" name="id" id="id" hidden>
         </div>
         <div class="mb-4">
             <label for="usia_ibu" class="block text-gray-700 text-sm font-bold mb-2">Usia Ibu</label>
@@ -54,11 +58,44 @@
         </div>
         <div class="mb-4">
             <label for="masa_kematian" class="block text-gray-700 text-sm font-bold mb-2">Masa Kematian</label>
-            <input type="text" class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="masa_kematian" id="masa_kematian" placeholder="Masukkan Masa Kematian" required>
+            <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="pilih_masa" id="pilih_masa" onchange="toggleForm()">
+                <option selected disabled>Pilih Masa Kematian</option>
+                <option value="hamil">Hamil</option>
+                <option value="persalinan">Persalinan</option>
+                <option value="nifas">Nifas</option>
+            </select>
         </div>
+        
+        <div id="form_hamil" class="masa-form hidden mb-4">
+            <label for="umur_kehamilan" class="block text-gray-700 text-sm font-bold mb-2">Umur Kehamilan (Minggu)</label>
+            <input type="text" class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="umur_kehamilan" id="umur_kehamilan" placeholder="Masukkan Umur Kehamilan" required>
+        </div>
+        
+        <div id="form_persalinan" class="masa-form hidden mb-4">
+            <label for="< 6 Jam PP" class="block text-gray-700 text-sm font-bold mb-2">< 6 Jam PP</label>
+            <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="persalinan" id="persalinan" required>
+                <option selected value="1">True</option>
+            </select>
+        </div>
+        
+        <div id="form_nifas" class="masa-form hidden mb-4">
+            <label for="nifas" class="block text-gray-700 text-sm font-bold mb-2">Nifas</label>
+            <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="nifas" id="nifas">
+                <option selected disabled>Pilih Nifas</option>
+                <option value="0">6-24 Jam PP</option>
+                <option value="1">1-3 Hari PP</option>
+                <option value="2">4-28 Hari PP</option>
+                <option value="3">29-42 Hari PP</option>
+            </select>
+        </div>
+
         <div class="mb-4">
             <label for="hari_kematian" class="block text-gray-700 text-sm font-bold mb-2">Hari Kematian</label>
-            <input type="text" class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="hari_kematian" id="hari_kematian" placeholder="Masukkan Hari Kematian" required>
+            <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="hari_kematian" id="hari_kematian" required>
+                <option selected disabled>Pilih Hari Kematian</option>
+                <option value="1">Hari Kerja</option>
+                <option value="0">Hari Libur</option>
+            </select>
         </div>
         <button type="button" onclick="saveKasus()" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">Simpan</button>
     </form>    
@@ -79,6 +116,9 @@
             <tr>
                 <th scope="col" class="px-6 py-3">
                     No
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Nama
                 </th>
                 <th scope="col" class="px-6 py-3">
                     Alamat
@@ -138,5 +178,17 @@
 @section('script')
 
 <script src="{{ asset('assets/js/Kasus.js') }}"></script>
+<script>
+function toggleForm() {
+    var selectedOption = document.getElementById("pilih_masa").value;
+    var forms = document.getElementsByClassName("masa-form");
+
+    for (var i = 0; i < forms.length; i++) {
+        forms[i].style.display = "none";
+    }
+
+    document.getElementById("form_" + selectedOption).style.display = "block";
+}
+</script>
 
 @endSection()

@@ -11,4 +11,9 @@ class CategoryPenyebab extends Model
 
     protected $table = 'category_penyebab';
     protected $guarded = [];
+
+    public function kasus()
+    {
+        return $this->hasMany(Kasus::class, 'id_category', 'id');
+    }
 }

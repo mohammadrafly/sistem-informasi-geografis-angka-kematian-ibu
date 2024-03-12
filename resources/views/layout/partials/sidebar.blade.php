@@ -1,4 +1,4 @@
-<div class="bg-[#046db9] min-w-[250px] shadow-lg" id="sidebar" data-toggle-sidebar>
+<div class="bg-[#046db9] min-w-[250px] shadow-lg border-r border-r-black" id="sidebar" data-toggle-sidebar>
     <div class="p-5">
         <div class="mb-10 flex justify-between">
             <div class="flex justify-center items-center">
@@ -25,9 +25,9 @@
             <ul>
                 <li class="p-2 my-2 rounded-lg 
                     @if (Route::currentRouteName() == 'dashboard')
-                        bg-white text-black 
+                        bg-white text-black border border-black
                     @else 
-                        hover:bg-white hover:text-black 
+                        hover:bg-white hover:text-black
                     @endif">
                     <a class="flex" href="{{ route('dashboard') }}">
                         <svg class="w-5 h-5 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -40,7 +40,7 @@
                 </li>
                 <li class="p-2 my-2 rounded-lg
                     @if (Route::currentRouteName() == 'artikel')
-                        bg-white text-black 
+                        bg-white text-black border border-black
                     @else 
                         hover:bg-white hover:text-black 
                     @endif">
@@ -55,7 +55,7 @@
                 </li>
                 <li class="p-2 my-2 rounded-lg
                     @if (Route::currentRouteName() == 'kasus' || Route::currentRouteName() == 'daerah' || Route::currentRouteName() == 'poi' || Route::currentRouteName() == 'user' || Route::currentRouteName() == 'kasus.category' || Route::currentRouteName() == 'poi.category' || Route::currentRouteName() == 'artikel.category')
-                        bg-white text-black 
+                        bg-white text-black border border-black
                     @else 
                         hover:bg-white hover:text-black 
                     @endif">
@@ -71,7 +71,7 @@
                     <ul id="dropdown-example" class="hidden py-2 space-y-2">
                         <li class="rounded-lg 
                         @if (Route::currentRouteName() == 'kasus')
-                            bg-[#046db9] text-white
+                            bg-[#046db9] text-white border border-black
                         @else 
                             hover:bg-[#046db9] hover:text-white
                         @endif">
@@ -79,7 +79,7 @@
                         </li>
                         <li class="rounded-lg
                         @if (Route::currentRouteName() == 'daerah')
-                            bg-[#046db9] text-white
+                            bg-[#046db9] text-white border border-black
                         @else 
                             hover:bg-[#046db9] hover:text-white
                         @endif">
@@ -87,7 +87,7 @@
                         </li>
                         <li class="rounded-lg
                         @if (Route::currentRouteName() == 'poi')
-                            bg-[#046db9] text-white
+                            bg-[#046db9] text-white border border-black
                         @else 
                             hover:bg-[#046db9] hover:text-white
                         @endif">
@@ -95,7 +95,7 @@
                         </li>
                         <li class="rounded-lg
                         @if (Route::currentRouteName() == 'user')
-                            bg-[#046db9] text-white
+                            bg-[#046db9] text-white border border-black
                         @else 
                             hover:bg-[#046db9] hover:text-white
                         @endif">
@@ -103,7 +103,7 @@
                         </li>
                         <li class="rounded-lg
                         @if (Route::currentRouteName() == 'poi.category')
-                            bg-[#046db9] text-white
+                            bg-[#046db9] text-white border border-black
                         @else 
                             hover:bg-[#046db9] hover:text-white
                         @endif">
@@ -111,7 +111,7 @@
                         </li>
                         <li class="rounded-lg
                         @if (Route::currentRouteName() == 'kasus.category')
-                            bg-[#046db9] text-white
+                            bg-[#046db9] text-white border border-black
                         @else 
                             hover:bg-[#046db9] hover:text-white
                         @endif">
@@ -121,7 +121,7 @@
                 </li>
                 <li class="p-2 my-2 rounded-lg
                     @if (Route::currentRouteName() == 'profile')
-                        bg-white text-black 
+                        bg-white text-black border border-black
                     @else 
                         hover:bg-white hover:text-black 
                     @endif">
@@ -134,7 +134,9 @@
                         </div>
                     </a>
                 </li>
-                <li class="p-2 my-2 hover:bg-white hover:text-black rounded-lg">
+            </ul>
+            <ul class="sticky bottom-0">
+                <li class="p-2 my-2 font-semibold text-red-500 rounded-lg">
                     <a class="flex" href="#" onclick="event.preventDefault(); Logout();">
                         <svg class="w-5 h-5 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12H4m12 0-4 4m4-4-4-4m3-4h2a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-2"/>

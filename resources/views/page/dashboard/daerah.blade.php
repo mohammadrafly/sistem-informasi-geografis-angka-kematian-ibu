@@ -2,15 +2,11 @@
 
 @section('content')
 
-<div class="text-xl font-bold">
-    {{ $data['title'] }}
-</div>
-
-<button class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 my-4 rounded" onclick="toggleCollapse('form')">
+<button class="bg-blue-500 hover:bg-blue-700 border border-black text-white px-4 py-2 my-4 rounded" onclick="toggleCollapse('form')">
     Tambah {{ $data['title'] }}
 </button>
 
-<div id="form" class="hidden overflow-hidden transition-transform ease-in-out duration-300 max-h-0 bg-white p-5 rounded-lg shadow-lg">
+<div id="form" class="hidden overflow-hidden border border-black transition-transform ease-in-out duration-300 max-h-0 bg-white p-5 rounded-lg shadow-lg">
     <form id="daerahForm" enctype="multipart/form-data" class="mt-4">
         @csrf
         <div class="mb-4">
@@ -31,7 +27,7 @@
     </form>    
 </div>
 
-<div class="relative overflow-x-auto shadow-lg rounded-lg mt-5 p-5 bg-gray-50">
+<div class="relative overflow-x-auto shadow-lg rounded-lg mt-5 p-5 bg-gray-50 border border-black">
     <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
         <label for="table-search" class="sr-only">Search</label>
         <div class="relative">
@@ -78,16 +74,14 @@
     </nav>
 </div>
 
-<div class="my-10 bg-white rounded-lg p-5 shadow-xl">
-    <div id="map" class="w-full h-96"></div>
-</div>
+<div id="map" class="my-10 rounded-lg p-5 shadow-xl w-full h-96 border border-black"></div>
 
 @endSection()
 
 @section('script')
 
 <script>
-    var map = L.map('map').setView([-8.1805, 113.6856], 13);
+    var map = L.map('map').setView([-7.923474796128599, 113.81854654735284], 13);
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -110,31 +104,93 @@
         };
     }
 
-    function getGeojson() {
+    function getGeojsonDaerah() {
         $.ajax({
             url: BASEURL + 'dashboard/daerah/get-daerah',
             success: function(data) {
-                var dataArray = data.message;
-                dataArray.forEach(function(featureData) {
-                    var Daerah = createGeoJSONFeature(JSON.parse(featureData.geojson.replace(/"/g, '')),);
+            var dataArray = data.message;
 
-                    var LayerDaerah = L.geoJSON(Daerah, {
-                        style: {
-                            fillColor: featureData.warna,
-                            color: featureData.warna,
-                            weight: 2
+            dataArray.forEach(function(featureData) {
+                var Daerah = createGeoJSONFeature(JSON.parse(featureData.geojson.replace(/"/g, '')));
+
+                var LayerDaerah = L.geoJSON(Daerah, {
+                style: {
+                    fillColor: featureData.warna,
+                    color: featureData.warna,
+                    weight: 2,
+                    cursor: 'pointer'
+                },
+                onEachFeature: function(feature, layer) { 
+                    layer.on({
+                    mouseover: function(e) {
+                        layer.setStyle({ fillOpacity: 0.3 });
+                    },
+                    mouseout: function(e) {
+                        layer.setStyle({ fillOpacity: 0.2 });
+                    },
+                    click: function(e) {
+                        var popupContent = featureData.nama_daerah;
+
+                        if (popupContent) {
+                            var popup = L.popup().setContent(popupContent);
+                            layer.bindPopup(popup).openPopup();
+                        } else {
+                            console.warn('No popup content provided for this feature.');
                         }
-                    }).addTo(map);
-                });
+                    }
+                    });
+                }
+                }).addTo(map);
+            });
             },
             error: function(xhr, status, error) {
-                console.error('Error fetching GeoJSON:', error);
+            console.error('Error fetching GeoJSON:', error);
             }
         });
     }
 
+    function getGeojsonPoi() {
+        $.ajax({
+            url: BASEURL + 'dashboard/poi/get-poi',
+            success: function(data) {
+            var dataArray = data.message;
+
+            dataArray.forEach(function(featureData) {
+                var Poi = createGeoJSONFeature(JSON.parse(featureData.geojson.replace(/"/g, '')));
+
+                var LayerPoi = L.geoJSON(Poi, {
+                    style: {
+                        fillColor: featureData.warna,
+                        color: featureData.warna,
+                        weight: 2
+                    },
+                    onEachFeature: function(feature, layer) {
+                        layer.on('click', function(e) {
+                        var popupContent = `
+                            <h4>${featureData.nama_titik} - ${featureData.category.nama_category}</h4>  
+                            <p>${featureData.kasus.nama}</p>
+                            <p></p>  
+                        `;
+
+                        var popup = L.popup({ closeButton: true })
+                            .setContent(popupContent)
+                            .setLatLng(e.latlng);
+
+                        popup.openOn(map);
+                        });
+                    }
+                }).addTo(map);
+            });
+            },
+            error: function(xhr, status, error) {
+            console.error('Error fetching GeoJSON:', error);
+            }
+        });
+        }
+    
     $(document).ready(function() {
-        getGeojson();
+        getGeojsonDaerah();
+        getGeojsonPoi();
     });
 </script>
 

@@ -88,7 +88,7 @@ function populateTable(response) {
         var row = $('<tr>').addClass('bg-white border-b');
         row.append($('<td>').addClass('px-6 py-4').text(index + 1));
         row.append($('<td>').addClass('px-6 py-4').text(poi.nama_titik));
-        row.append($('<td>').addClass('px-6 py-4').text(poi.alamat));
+        row.append($('<td>').addClass('px-6 py-4').text(poi.nama));
         row.append($('<td>').addClass('px-6 py-4').text(poi.geojson));
         row.append($('<td>').addClass('px-6 py-4').text(poi.nama_kategori));  
         row.append($('<td>').addClass('px-6 py-4').text(poi.warna));

@@ -43,7 +43,7 @@ class POIController extends Controller
     
     public function getPOI()
     {
-        $data = POI::all();
+        $data = POI::with('kasus', 'category', 'penyebab')->get();
         return $this->jsonResponse(true, $data, 200);
     }
 
@@ -66,7 +66,7 @@ class POIController extends Controller
                             ->orWhere('poi.warna', 'like', "%$searchTerm%");
                 }
             
-                $data = $query->select('poi.*', 'kasus.alamat as alamat', 'category_poi.nama_category as nama_kategori')
+                $data = $query->select('poi.*', 'kasus.nama as nama', 'category_poi.nama_category as nama_kategori')
                                 ->paginate($perPage);
       
                 return $this->jsonResponse(true, $data, 200);
@@ -92,7 +92,7 @@ class POIController extends Controller
             'category' => CategoryPOI::all(),
             'kasus' => Kasus::whereNotIn('id', $existingIds)->get(),
             'daerah' => Daerah::all(),
-            'poi' => POI::all(),
+            'poi' => POI::with('kasus', 'category')->get(),
         ];
 
         return view('page.dashboard.poi', compact('data'));

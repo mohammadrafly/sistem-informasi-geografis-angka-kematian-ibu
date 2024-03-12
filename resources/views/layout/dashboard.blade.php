@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
      crossorigin=""/>
-     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
      crossorigin=""></script>
 </head>
@@ -20,6 +20,7 @@
     <div class="bg-[#d8fbf7] flex min-h-screen">
         @include('layout.partials.sidebar')
         <div class="m-10 w-full">
+            @include('layout.partials.navbar_dashboard')
             @yield('content')
             <footer class="sticky mt-10 bottom-0">
                 <div class="w-full max-w-screen-xl">
@@ -31,6 +32,7 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="{{ asset('assets/js/App.js') }}"></script>
     @vite('resources/js/app.js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>

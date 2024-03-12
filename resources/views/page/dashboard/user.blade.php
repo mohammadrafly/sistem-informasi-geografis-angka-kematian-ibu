@@ -2,15 +2,11 @@
 
 @section('content')
 
-<div class="text-xl font-bold">
-    {{ $data['title'] }}
-</div>
-
-<button class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 my-4 rounded" onclick="toggleCollapse('form')">
+<button class="bg-blue-500 hover:bg-blue-700 border border-black text-white px-4 py-2 my-4 rounded" onclick="toggleCollapse('form')">
     Tambah {{ $data['title'] }}
 </button>
 
-<div id="form" class="hidden overflow-hidden transition-transform ease-in-out duration-300 max-h-0 bg-white p-5 rounded-lg shadow-lg">
+<div id="form" class="hidden overflow-hidden border border-black transition-transform ease-in-out duration-300 max-h-0 bg-white p-5 rounded-lg shadow-lg">
     <form id="userForm" class="mt-4">
         @csrf
         <div class="mb-4">
@@ -43,7 +39,7 @@
     </form>    
 </div>
 
-<div class="relative overflow-x-auto shadow-lg rounded-lg mt-5 p-5 bg-gray-50">
+<div class="relative overflow-x-auto shadow-lg rounded-lg mt-5 p-5 bg-gray-50 border border-black">
     <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
         <label for="table-search" class="sr-only">Search</label>
         <div class="relative">

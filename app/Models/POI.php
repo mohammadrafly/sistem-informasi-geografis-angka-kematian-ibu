@@ -21,4 +21,10 @@ class POI extends Model
     {
         return $this->belongsTo(CategoryPOI::class, 'id_category', 'id');
     }
+
+    public function penyebab()
+    {
+        return $this->belongsTo(CategoryPenyebab::class, 'id_category', 'id')
+                    ->with('kasus');
+    }
 }

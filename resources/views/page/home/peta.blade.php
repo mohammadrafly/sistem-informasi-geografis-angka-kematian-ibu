@@ -7,8 +7,8 @@
     <p class="font-bold">(Data dapat berubah sewaktu-waktu)</p>
 </div>
 
-<button onclick="refreshData()" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Refresh Data</button>
-<div class="my-10 flex justify-between gap-5">
+<button id="refreshButton" onclick="refreshData()" class="text-white mt-10 mb-2 bg-blue-500 rounded-lg p-2 border border-black">Update Bondowoso</button>
+<div class="mb-10 flex justify-between gap-5">
     <div class="grid grid-cols-1 gap-5">
         <div class="bg-white w-96 border border-black rounded-lg">
             <table id="tablePenyebab" class="w-full mt-4">
@@ -214,13 +214,20 @@
         $.ajax({
             url: '{{ route('peta') }}',
             success: function(data) {
-                populateTablePenyebab(data);
-                populateTableTempat(data);
+                var timestamp = new Date().toLocaleString();
+                populateTablePenyebab(data, timestamp); 
+                populateTableTempat(data, timestamp); 
+                updateButtonTitle(timestamp); 
             },
             error: function(xhr) {
                 console.error('Error:', xhr.statusText);
             }
         });
+    }
+
+    function updateButtonTitle(timestamp) {
+        var button = document.getElementById('refreshButton');
+        button.textContent = "Update Bondowoso: " + timestamp; // Set button text
     }
 
     $(document).ready(function() {

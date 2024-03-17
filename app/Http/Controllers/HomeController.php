@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Artikel;
-use App\Models\CategoryArtikel;
 use App\Models\Daerah;
 use App\Models\POI;
+use App\Models\Kasus;
 
 class HomeController extends Controller
 {    
@@ -32,7 +32,6 @@ class HomeController extends Controller
         $data = [
             'title' => 'Artikel',
             'artikel' => Artikel::all(),
-            'category' => CategoryArtikel::all(),
         ];
         return view('page.home.artikel', compact('data'));
     }
@@ -46,26 +45,33 @@ class HomeController extends Controller
         return view('page.home.artikelSingle', compact('data'));
     }
 
-    public function artikelCategoryHome(Request $request, $id)
+    public function peta(Request $request)
     {
-        $data = [
-            'title' => CategoryArtikel::find($id)->nama_category,
-            'artikel' => Artikel::with('user', 'category')->where('id_category', $id)->get(),
-        ];
-        return view('page.home.artikelCategory', compact('data'));
-    }
+        $kasus = Kasus::with('category')->get();
 
-    public function peta()
-    {
+        if ($request->ajax()) {
+            $groupedData = [
+                'groupPenyebab' => $kasus->groupBy('category.nama_category')->map(function ($group) {
+                    return $group->count();
+                }),
+                'groupTempat' => $kasus->groupBy('tempat_kematian')->map(function ($group) {
+                    return $group->count();
+                }),
+            ];
+    
+            return $this->jsonResponse(true, $groupedData, 200);
+        }
+
         $data = [
             'title' => 'PETA Resiko',
         ];
+
         return view('page.home.peta', compact('data'));
     }
     
     public function getPOI()
     {
-        $data = POI::all();
+        $data = POI::with('kasus', 'category', 'penyebab')->get();
         return $this->jsonResponse(true, $data, 200);
     }
 

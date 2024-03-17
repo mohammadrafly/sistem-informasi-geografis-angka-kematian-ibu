@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CategoryPenyebab;
 use App\Models\Kasus;
+use App\Models\POI;
 
 class KasusController extends Controller
 {
@@ -35,6 +36,7 @@ class KasusController extends Controller
                 $query = Kasus::query();
     
                 $query->leftJoin('category_penyebab', 'kasus.id_category', '=', 'category_penyebab.id');
+                $query->leftJoin('poi', 'kasus.alur', '=', 'poi.id');
           
                 if ($request->has('search')) {
                     $searchTerm = $request->input('search');
@@ -50,15 +52,27 @@ class KasusController extends Controller
                           ->orWhere('kasus.hari_kematian', 'like', "%$searchTerm%")
                           ->orWhere('kasus.bukti_kematian', 'like', "%$searchTerm%");
                 }
+
+                $alurValues = Kasus::pluck('alur')->toArray();
+                
+                foreach ($alurValues as $alurValue) {
+                    $query->orWhere('kasus.alur', 'like', "%$alurValue%");
+                }
     
-                $data = $query->select('kasus.*', 'kasus.id as id', 'category_penyebab.nama_category as nama_kategori')
-                              ->paginate($perPage);
-                            
+                $data = $query->select(
+                                    'kasus.*', 
+                                    'kasus.id as id', 
+                                    'category_penyebab.nama_category as nama_kategori',
+                                    'poi.nama_titik as nama_titik',
+                                    'poi.id as id_poi'
+                                )
+                              ->paginate($perPage); 
                 return $this->jsonResponse(true, $data, 200);
             }
 
             $bukti_kematian = $this->handleFileUpload($request);
-            
+            $alur = implode(',', $request->alur);
+
             Kasus::create([
                 'nama' => $request->nama,
                 'alamat' => $request->alamat,
@@ -68,7 +82,7 @@ class KasusController extends Controller
                 'bukti_kematian' => $bukti_kematian,
                 'tempat_kematian' => $request->tempat_kematian,
                 'estafet_rujukan' => $request->estafet_rujukan,
-                'alur' => $request->alur,
+                'alur' => $alur,
                 'masa_kematian' => $request->masa_kematian,
                 'hari_kematian' => $request->hari_kematian,
             ]);
@@ -79,6 +93,7 @@ class KasusController extends Controller
         $data = [
             'title' => 'Data Kasus',
             'penyebab' => CategoryPenyebab::all(),
+            'poi' => POI::with('category')->where('id_category', '2')->get(),
         ];
         return view('page.dashboard.kasus', compact('data'));
     }

@@ -85,15 +85,15 @@ class POIController extends Controller
             return $this->jsonResponse(true, 'Berhasil Menambah Point Of Interest.');
         }
 
-        $existingIds = POI::pluck('id_kasus')->toArray();
+        $existingIds = POI::whereNotNull('id_kasus')->pluck('id_kasus')->toArray();
 
         $data = [
             'title' => 'Data Point Of Interest',
             'category' => CategoryPOI::all(),
-            'kasus' => Kasus::whereNotIn('id', $existingIds)->get(),
+            'kasus' => empty($existingIds) ? Kasus::all() : Kasus::whereNotIn('id', $existingIds)->get(),
             'daerah' => Daerah::all(),
             'poi' => POI::with('kasus', 'category')->get(),
-        ];
+        ];        
 
         return view('page.dashboard.poi', compact('data'));
     }
@@ -110,7 +110,7 @@ class POIController extends Controller
             }
     
             $poi = POI::find($id);
-            $poi->update($request->only(['nama_titik', 'warna']));
+            $poi->update($request->only(['nama_titik', 'warna', 'id_kasus']));
     
             $geojson = $this->handleFileUpload($request);
             if ($geojson) {

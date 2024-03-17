@@ -92,13 +92,19 @@ function populateTable(response) {
         row.append($('<td>').addClass('px-6 py-4').text(kasus.alamat));
         row.append($('<td>').addClass('px-6 py-4').text(kasus.usia_ibu));
         row.append($('<td>').addClass('px-6 py-4').text(kasus.tanggal));
-        row.append($('<td>').addClass('px-6 py-4').text(kasus.nama_kategori));  
-        row.append($('<td>').addClass('px-6 py-4').text(kasus.bukti_kematian));   
+        row.append($('<td>').addClass('px-6 py-4').text(kasus.nama_kategori));
+        row.append($('<td>').addClass('px-6 py-4').text(kasus.bukti_kematian));
         row.append($('<td>').addClass('px-6 py-4').text(kasus.tempat_kematian));
         row.append($('<td>').addClass('px-6 py-4').text(kasus.estafet_rujukan));
         row.append($('<td>').addClass('px-6 py-4').text(kasus.alur));
         row.append($('<td>').addClass('px-6 py-4').text(kasus.masa_kematian));
-        row.append($('<td>').addClass('px-6 py-4').text(kasus.hari_kematian));
+        let hari_kematian = '';
+        if(kasus.hari_kematian === '1') {
+            hari_kematian = 'Hari Kerja'
+        } else {
+            hari_kematian = 'Hari Libur'
+        }
+        row.append($('<td>').addClass('px-6 py-4').text(hari_kematian));
         var editButton = $('<button>')
             .addClass('font-medium text-white bg-blue-600 py-1 px-2 rounded-lg hover:underline')
             .text('Edit')
@@ -127,24 +133,24 @@ function saveKasus() {
     const formData = new FormData($('#kasusForm')[0]);
 
     if (pilihMasa === 'hamil') {
-        const data = $('#umur_kehamilan').val();
+        const data = 'Umur ' + $('#umur_kehamilan').val();
         formData.append('masa_kematian', data);
     } else if (pilihMasa === 'persalinan') {
-        const data = '< 6 Jam PP';
+        const data = 'Persalinan(< 6 Jam PP)';
         formData.append('masa_kematian', data);
     } else if (pilihMasa === 'nifas') {
         const nifas = $('#nifas').val();
         if (nifas === '0') {
-            const data = '6-24 Jam PP';
+            const data = 'Nifas(6-24 Jam PP)';
             formData.append('masa_kematian', data);
         } else if (nifas === '1') {
-            const data = '1-3 Hari PP';
+            const data = 'Nifas(1-3 Hari PP)';
             formData.append('masa_kematian', data);
         } else if (nifas === '2') {
-            const data = '4-28 Hari PP';
+            const data = 'Nifas(4-28 Hari PP)';
             formData.append('masa_kematian', data);
         } else {
-            const data = '28-42 Hari PP';
+            const data = 'Nifas(28-42 Hari PP)';
             formData.append('masa_kematian', data);
         }
     }

@@ -1,5 +1,5 @@
 <div class="bg-[#046db9]">
-    <div class="lg:mx-80 md:mx-24 sm:mx-10 h-20 flex items-center">
+    <div class="mx-24 h-20 flex items-center">
         <div class="flex justify-between w-full text-white">
             <div class="text-3xl font-bold">
                 <a href="{{ route('home') }}">

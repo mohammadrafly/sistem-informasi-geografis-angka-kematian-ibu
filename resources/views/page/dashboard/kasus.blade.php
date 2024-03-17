@@ -42,16 +42,30 @@
         </div>
         <div class="mb-4">
             <label for="tempat_kematian" class="block text-gray-700 text-sm font-bold mb-2">Tempat Kematian</label>
-            <input type="text" class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="tempat_kematian" id="tempat_kematian" placeholder="Masukkan Tempat Kematian" required>
+            <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="tempat_kematian" id="tempat_kematian" required>
+                <option selected disabled>Pilih Tempat Kematian</option>
+                <option value="bpm">BPM</option>
+                <option value="perjalanan">Perjalanan</option>
+                <option value="puskesmas">Puskesmas</option>
+                <option value="rumah_ibu">Rumah Ibu</option>
+                <option value="rumah_sakit_umum">Rumah Sakit Umum</option>
+                <option value="rumah_sakit_luar">Rumah Sakit Luar</option>
+            </select>
+        </div>
+        <div class="mb-4">
+            <label for="alur" class="block text-gray-700 text-sm font-bold mb-2">Alur</label>
+            <select multiple name="alur[]" id="alur" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                <option selected>Pilih Alur</option>
+                @foreach($data['poi'] as $data)
+                <option value="{{$data->id}}">{{$data->nama_titik}}</option>
+                @endforeach
+            </select>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Pilih sesuai urutan alur estafet, gunakan ctrl+klik kiri</p>
         </div>
         <div class="mb-4">
             <label for="estafet_rujukan" class="block text-gray-700 text-sm font-bold mb-2">Estafet Rujukan</label>
             <input type="text" class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="estafet_rujukan" id="estafet_rujukan" placeholder="Masukkan Estafet Rujukan" required>
-        </div>
-        <div class="mb-4">
-            <label for="alur" class="block text-gray-700 text-sm font-bold mb-2">Alur</label>
-            <input type="text" class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="alur" id="alur" placeholder="Masukkan Alur" required>
-        </div>
+        </div>        
         <div class="mb-4">
             <label for="masa_kematian" class="block text-gray-700 text-sm font-bold mb-2">Masa Kematian</label>
             <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="pilih_masa" id="pilih_masa" onchange="toggleForm()">
@@ -175,6 +189,16 @@
 
 <script src="{{ asset('assets/js/Kasus.js') }}"></script>
 <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const alurSelect = document.getElementById('alur');
+    const estafetInput = document.getElementById('estafet_rujukan');
+
+    alurSelect.addEventListener('change', function() {
+        const selectedOptionsCount = alurSelect.selectedOptions.length;
+        estafetInput.value = selectedOptionsCount + 'x';
+    });
+});
+
 function toggleForm() {
     var selectedOption = document.getElementById("pilih_masa").value;
     var forms = document.getElementsByClassName("masa-form");

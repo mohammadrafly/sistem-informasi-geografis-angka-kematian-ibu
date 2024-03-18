@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\CategoryPenyebab;
 use App\Models\Kasus;
 use App\Models\POI;
+use App\Models\Notification;
+use App\Models\User;
 
 class KasusController extends Controller
 {
@@ -73,7 +75,7 @@ class KasusController extends Controller
             $bukti_kematian = $this->handleFileUpload($request);
             $alur = implode(',', $request->alur);
 
-            Kasus::create([
+            $data = Kasus::create([
                 'nama' => $request->nama,
                 'alamat' => $request->alamat,
                 'usia_ibu' => $request->usia_ibu,
@@ -86,6 +88,14 @@ class KasusController extends Controller
                 'masa_kematian' => $request->masa_kematian,
                 'hari_kematian' => $request->hari_kematian,
             ]);
+
+            $users = User::all();
+            foreach ($users as $user) {
+                Notification::create([
+                    'user_id' => $user->id,
+                    'message' => 'New data added: ' . $data->nama,
+                ]);
+            }
 
             return $this->jsonResponse(true, 'Berhasil Menambah Kasus.');
         }

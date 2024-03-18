@@ -42,4 +42,9 @@ class User extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
     ];
+
+    public function hasRole($roles)
+    {
+        return in_array($this->role, $roles);
+    }
 }

@@ -38,6 +38,7 @@
                         </div>
                     </a>
                 </li>
+                @if (Auth::user()->role === 'admin')
                 <li class="p-2 my-2 rounded-lg
                     @if (Route::currentRouteName() == 'artikel')
                         bg-white text-black border border-black
@@ -119,6 +120,39 @@
                         </li>
                     </ul>
                 </li>
+                @elseif (Auth::user()->role === 'dinkes' or 'bidan')
+                <li class="p-2 my-2 rounded-lg
+                    @if (Route::currentRouteName() == 'kasus')
+                        bg-white text-black border border-black
+                    @else 
+                        hover:bg-white hover:text-black 
+                    @endif">
+                    <a class="flex" href="{{ route('kasus') }}">
+                        <svg class="w-5 h-5 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 4h3c.6 0 1 .4 1 1v15c0 .6-.4 1-1 1H6a1 1 0 0 1-1-1V5c0-.6.4-1 1-1h3m0 3h6m-3 5h3m-6 0h0m3 4h3m-6 0h0m1-13v4h4V3h-4Z"/>
+                        </svg>
+                        <div>
+                            Kasus
+                        </div>
+                    </a>
+                </li>
+                <li class="p-2 my-2 rounded-lg
+                    @if (Route::currentRouteName() == 'poi')
+                        bg-white text-black border border-black
+                    @else 
+                        hover:bg-white hover:text-black 
+                    @endif">
+                    <a class="flex" href="{{ route('poi') }}">
+                        <svg class="w-5 h-5 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.8 13.938h-.011a7 7 0 1 0-11.464.144h-.016l.14.171c.1.127.2.251.3.371L12 21l5.13-6.248c.194-.209.374-.429.54-.659l.13-.155Z"/>
+                        </svg>  
+                        <div>
+                            Point Of Interest
+                        </div>
+                    </a>
+                </li>
+                @endif
                 <li class="p-2 my-2 rounded-lg
                     @if (Route::currentRouteName() == 'profile')
                         bg-white text-black border border-black

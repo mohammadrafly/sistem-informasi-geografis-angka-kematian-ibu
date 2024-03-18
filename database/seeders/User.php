@@ -22,10 +22,10 @@ class User extends Seeder
                 'password' => Hash::make('admin1234'),
             ],
             [
-                'name' => 'Gizi Dinkes',
-                'email' => 'gizidinkes@gmail.com',
-                'role' => 'gizi_dinkes',
-                'password' => Hash::make('gizi1234'),
+                'name' => 'Dinkes',
+                'email' => 'dinkes@gmail.com',
+                'role' => 'dinkes',
+                'password' => Hash::make('dinkes1234'),
             ],
             [
                 'name' => 'Bidan',

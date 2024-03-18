@@ -8,6 +8,7 @@ use App\Http\Controllers\ArtikelController;
 use App\Http\Controllers\POIController;
 use App\Http\Controllers\DaerahController;
 use App\Http\Controllers\KasusController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -42,6 +43,10 @@ Route::middleware(['guest'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::prefix('dashboard')->group(function () { 
+        Route::controller(NotificationController::class)->group(function () {
+            Route::get('/notification', 'index')->name('notification');
+            Route::get('/notification/update', 'update')->name('notification.update');
+        });
         Route::controller(AuthController::class)->group(function () {
             Route::match(['GET'], '/logout', 'logout')->name('logout');
         });
@@ -50,15 +55,12 @@ Route::middleware(['auth'])->group(function () {
             Route::match(['GET', 'POST'], '/profile/{id}', 'updateProfile')->name('profile');
             Route::match(['GET', 'POST'], '/profile/password/{id}', 'updatePassword')->name('password');
         });
-        Route::controller(ArtikelController::class)->group(function () {
-            Route::prefix('artikel')->group(function (){
-                Route::match(['GET','POST'], '/', 'artikel')->name('artikel');
-                Route::match(['GET','POST'], '/update/{id}', 'artikelSingle')->name('artikel.single');
-                Route::match(['GET'], '/delete/{id}', 'artikelDelete')->name('artikel.delete');
-                Route::prefix('category')->group(function (){
-                    Route::match(['GET','POST'], '/', 'artikelCategory')->name('artikel.category');
-                    Route::match(['GET','POST'], '/update/{id}', 'artikelCategorySingle')->name('artikel.category.single');
-                    Route::match(['GET'], '/delete/{id}', 'artikelCategoryDelete')->name('artikel.category.delete');
+        Route::middleware(['auth', 'role:admin'])->group(function () {
+            Route::controller(ArtikelController::class)->group(function () {
+                Route::prefix('artikel')->group(function (){
+                    Route::match(['GET','POST'], '/', 'artikel')->name('artikel');
+                    Route::match(['GET','POST'], '/update/{id}', 'artikelSingle')->name('artikel.single');
+                    Route::match(['GET'], '/delete/{id}', 'artikelDelete')->name('artikel.delete');
                 });
             });
         });
@@ -67,10 +69,12 @@ Route::middleware(['auth'])->group(function () {
                 Route::match(['GET','POST'], '/', 'kasus')->name('kasus');
                 Route::match(['GET','POST'], '/update/{id}', 'kasusSingle')->name('kasus.single');
                 Route::match(['GET'], '/delete/{id}', 'kasusDelete')->name('kasus.delete');
-                Route::prefix('category')->group(function (){
-                    Route::match(['GET','POST'], '/', 'kasusCategory')->name('kasus.category');
-                    Route::match(['GET','POST'], '/update/{id}', 'kasusCategorySingle')->name('kasus.category.single');
-                    Route::match(['GET'], '/delete/{id}', 'kasusCategoryDelete')->name('kasus.category.delete');
+                Route::middleware(['auth', 'role:admin'])->group(function () {
+                    Route::prefix('category')->group(function (){
+                        Route::match(['GET','POST'], '/', 'kasusCategory')->name('kasus.category');
+                        Route::match(['GET','POST'], '/update/{id}', 'kasusCategorySingle')->name('kasus.category.single');
+                        Route::match(['GET'], '/delete/{id}', 'kasusCategoryDelete')->name('kasus.category.delete');
+                    });
                 });
             });
         });
@@ -80,26 +84,32 @@ Route::middleware(['auth'])->group(function () {
                 Route::match(['GET','POST'], '/', 'poi')->name('poi');
                 Route::match(['GET','POST'], '/update/{id}', 'poiSingle')->name('poi.single');
                 Route::match(['GET'], '/delete/{id}', 'poiDelete')->name('poi.delete');
-                Route::prefix('category')->group(function (){
-                    Route::match(['GET','POST'], '/', 'poiCategory')->name('poi.category');
-                    Route::match(['GET','POST'], '/update/{id}', 'poiCategorySingle')->name('poi.category.single');
-                    Route::match(['GET'], '/delete/{id}', 'poiCategoryDelete')->name('poi.category.delete');
+                Route::middleware(['auth', 'role:admin'])->group(function () {
+                    Route::prefix('category')->group(function (){
+                        Route::match(['GET','POST'], '/', 'poiCategory')->name('poi.category');
+                        Route::match(['GET','POST'], '/update/{id}', 'poiCategorySingle')->name('poi.category.single');
+                        Route::match(['GET'], '/delete/{id}', 'poiCategoryDelete')->name('poi.category.delete');
+                    });
                 });
             });
         });
-        Route::controller(DaerahController::class)->group(function () {
-            Route::prefix('daerah')->group(function (){
-                Route::get('/get-daerah', 'getDaerah')->name('get.daerah');
-                Route::match(['GET','POST'], '/', 'daerah')->name('daerah');
-                Route::match(['GET','POST'], '/update/{id}', 'daerahSingle')->name('daerah.single');
-                Route::match(['GET'], '/delete/{id}', 'daerahDelete')->name('daerah.delete');
+        Route::middleware(['auth', 'role:admin'])->group(function () {
+            Route::controller(DaerahController::class)->group(function () {
+                Route::prefix('daerah')->group(function (){
+                    Route::get('/get-daerah', 'getDaerah')->name('get.daerah');
+                    Route::match(['GET','POST'], '/', 'daerah')->name('daerah');
+                    Route::match(['GET','POST'], '/update/{id}', 'daerahSingle')->name('daerah.single');
+                    Route::match(['GET'], '/delete/{id}', 'daerahDelete')->name('daerah.delete');
+                });
             });
         });
-        Route::controller(UserController::class)->group(function () {
-            Route::prefix('user')->group(function (){
-                Route::match(['GET','POST'], '/', 'index')->name('user');
-                Route::match(['GET','POST'], '/update/{id}', 'show')->name('user.show');
-                Route::match(['GET'], '/delete/{id}', 'destroy')->name('user.delete');
+        Route::middleware(['auth', 'role:admin'])->group(function () {
+            Route::controller(UserController::class)->group(function () {
+                Route::prefix('user')->group(function (){
+                    Route::match(['GET','POST'], '/', 'index')->name('user');
+                    Route::match(['GET','POST'], '/update/{id}', 'show')->name('user.show');
+                    Route::match(['GET'], '/delete/{id}', 'destroy')->name('user.delete');
+                });
             });
         });
     });

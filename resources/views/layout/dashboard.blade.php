@@ -21,6 +21,9 @@
         @include('layout.partials.sidebar')
         <div class="m-10 w-full">
             @include('layout.partials.navbar_dashboard')
+            <div class="my-5">
+                @include('layout.partials.flash_message')
+            </div>
             @yield('content')
             <footer class="sticky mt-10 bottom-0">
                 <div class="w-full max-w-screen-xl">
@@ -36,6 +39,7 @@
     <script src="{{ asset('assets/js/App.js') }}"></script>
     @vite('resources/js/app.js')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+    @include('layout.partials.notification')
     @yield('script')
 </body>
 </html>

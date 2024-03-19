@@ -19,6 +19,14 @@
             <textarea class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" id="description" name="description"></textarea>
         </div>
         <div class="mb-4">
+            <label for="published" class="block text-gray-700 text-sm font-bold mb-2">Kategori</label>
+            <select type="text" class="disabled:bg-gray-300 w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="category" id="category" placeholder="Category" required>
+                <option selected>Pilih Kategori</option>
+                <option value="artikel">Artikel</option>
+                <option value="informasi">Informasi</option>
+            </select>
+        </div>
+        <div class="mb-4">
             <label for="published" class="block text-gray-700 text-sm font-bold mb-2">Published</label>
             <select type="text" class="disabled:bg-gray-300 w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="published" id="published" placeholder="Published" required>
                 <option selected>Pilih Status Published</option>
@@ -59,6 +67,9 @@
                 </th>
                 <th scope="col" class="px-6 py-3">
                     Artikel
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Kategori
                 </th>
                 <th scope="col" class="px-6 py-3">
                     Img

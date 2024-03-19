@@ -44,7 +44,7 @@ class POIController extends Controller
     public function getPOI()
     {
         $data = POI::with('kasus', 'category', 'penyebab')->get();
-        return $this->jsonResponse(true, $data, 200);
+        return response()->json($data);
     }
 
     public function poi(Request $request)
@@ -78,6 +78,7 @@ class POIController extends Controller
                 'nama_titik' => $request->nama_titik,
                 'geojson' => $geojson,
                 'warna' => $request->warna,
+                'id_daerah' => $request->id_daerah,
                 'id_category' => $request->id_category,
                 'id_kasus' => $request->id_kasus,
             ]);
@@ -92,7 +93,7 @@ class POIController extends Controller
             'category' => CategoryPOI::all(),
             'kasus' => empty($existingIds) ? Kasus::all() : Kasus::whereNotIn('id', $existingIds)->get(),
             'daerah' => Daerah::all(),
-            'poi' => POI::with('kasus', 'category')->get(),
+            'poi' => POI::with('kasus', 'category', 'daerah')->get(),
         ];        
 
         return view('page.dashboard.poi', compact('data'));
@@ -106,11 +107,11 @@ class POIController extends Controller
             }
     
             if ($request->isMethod('get')) {
-                return $this->jsonResponse(true, POI::with('kasus', 'category')->find($id), 200);
+                return $this->jsonResponse(true, POI::with('kasus', 'category', 'daerah')->find($id), 200);
             }
     
             $poi = POI::find($id);
-            $poi->update($request->only(['nama_titik', 'warna', 'id_kasus']));
+            $poi->update($request->only(['nama_titik', 'warna', 'id_kasus', 'id_category', 'id_daerah']));
     
             $geojson = $this->handleFileUpload($request);
             if ($geojson) {

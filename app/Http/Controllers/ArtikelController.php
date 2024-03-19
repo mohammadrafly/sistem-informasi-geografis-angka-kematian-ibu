@@ -56,6 +56,7 @@ class ArtikelController extends Controller
                 'title' => $request->title,
                 'author' => Auth::user()->id,
                 'img' => $img,
+                'category' => $request->category,
                 'description' => $request->description,
                 'published' => $request->published,
             ]);
@@ -81,7 +82,7 @@ class ArtikelController extends Controller
             }
     
             $artikel = Artikel::find($id);
-            $artikel->update($request->only(['title', 'author', 'description', 'published']));
+            $artikel->update($request->only(['title', 'author', 'category', 'description', 'published']));
     
             $img = $this->handleFileUpload($request);
             if ($img) {

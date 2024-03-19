@@ -31,8 +31,10 @@ class HomeController extends Controller
     {
         $data = [
             'title' => 'Artikel',
-            'artikel' => Artikel::all(),
+            'artikel' => Artikel::where('category', 'artikel')->get(),
+            'informasi' => Artikel::where('category', 'informasi')->get(),
         ];
+
         return view('page.home.artikel', compact('data'));
     }
 
@@ -40,7 +42,7 @@ class HomeController extends Controller
     {
         $data = [
             'title' => 'Artikel',
-            'artikel' => Artikel::with('user', 'category')->find($id),
+            'artikel' => Artikel::with('user')->find($id),
         ];
         return view('page.home.artikelSingle', compact('data'));
     }
@@ -72,7 +74,7 @@ class HomeController extends Controller
     public function getPOI()
     {
         $data = POI::with('kasus', 'category', 'penyebab')->get();
-        return $this->jsonResponse(true, $data, 200);
+        return response()->json($data);
     }
 
     public function getDaerah()

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('id_kasus')->nullable()->constraint('kasus');
             $table->text('geojson');
             $table->foreignId('id_category')->constraint('category_poi');
+            $table->foreignId('id_daerah')->constraint('daerah');
             $table->string('warna');
             $table->timestamps();
         });

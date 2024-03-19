@@ -30,6 +30,7 @@
                         $('#notificationContainer').append(notificationElement);
                         displayedNotifications++;
                     } else {
+                        const createdAt = new Date(notification.created_at).toLocaleString();
                         const notificationElement = $(`
                             <div class="flex items-start justify-between cursor-pointer hidden notification-item hover:bg-gray-200 rounded-lg p-2" data-notification-id="${notification.id}">
                                 <div class="flex items-center">

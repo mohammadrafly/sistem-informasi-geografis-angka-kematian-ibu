@@ -8,6 +8,7 @@ use App\Models\Kasus;
 use App\Models\POI;
 use App\Models\Notification;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class KasusController extends Controller
 {
@@ -28,6 +29,29 @@ class KasusController extends Controller
             return $fileName;
         }
         return null;
+    }
+
+    public function getKasusPerYear()
+    {
+        $countedData = Kasus::select(DB::raw('YEAR(created_at) as year'), DB::raw('count(*) as total'))
+                            ->groupBy('year')
+                            ->get()
+                            ->pluck('total', 'year')
+                            ->toArray();
+    
+        return response()->json($countedData);
+    }
+    
+    public function getKasusPerKategori()
+    {
+        $countedData = Kasus::select('category_penyebab.nama_category', DB::raw('count(*) as total'))
+                            ->join('category_penyebab', 'kasus.id_category', '=', 'category_penyebab.id')
+                            ->groupBy('category_penyebab.nama_category')
+                            ->get()
+                            ->pluck('total', 'nama_category')
+                            ->toArray();
+    
+        return response()->json($countedData);
     }
 
     public function kasus(Request $request)

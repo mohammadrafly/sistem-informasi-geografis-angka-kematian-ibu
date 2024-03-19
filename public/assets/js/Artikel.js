@@ -103,7 +103,7 @@ response.forEach(function(artikel, index) {
     row.append($('<td>').addClass('px-6 py-4').text(artikel.title));
     row.append($('<td>').addClass('px-6 py-4').text(artikel.author_name));
     row.append($('<td>').addClass('px-6 py-4').text(artikel.description.substring(0, 10) + (artikel.description.length > 10 ? '...' : '')));
-    row.append($('<td>').addClass('px-6 py-4').text(artikel.category_name));  
+    row.append($('<td>').addClass('px-6 py-4').text(artikel.category));  
     row.append($('<td>').addClass('px-6 py-4').text(artikel.img));   
     let publishedText = '';
     if (artikel.published === '1') {
@@ -168,7 +168,7 @@ ajaxRequest('dashboard/artikel/update/' + artikelId, 'GET', '',
             toggleCollapse('form');
             $('#id').val(response.message.id);
             $('#title').val(response.message.title);
-            $('#id_category').val(response.message.id_category);
+            $('#category').val(response.message.category);
             $('#author').val(response.message.author);
             $('#published').val(response.message.published);
             

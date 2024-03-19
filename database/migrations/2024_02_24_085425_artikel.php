@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('author')->constraint('users');
             $table->string('img');
             $table->text('description');
-            $table->foreignId('id_category')->constraint('category_artikel');
+            $table->enum('category', ['artikel', 'informasi']);
             $table->enum('published',[1, 0]);
             $table->timestamps();
         });

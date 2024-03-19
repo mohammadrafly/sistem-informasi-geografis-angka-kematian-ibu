@@ -2,7 +2,35 @@
 
 @section('content')
 
-@if ($data['artikel'] === '')
+<div class="text-center mt-10">
+  <h1 class="font-bold text-2xl">INFORMASI ANGKA KEMATIAN IBU</h1>
+</div>
+@if (!empty($data['informasi']))
+<div class="grid gap-4 grid-cols-2 mt-10">
+    @foreach ($data['informasi'] as $item)
+    <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow">
+      <a href="{{ route('artikel.single.home', $item->id)}}">
+          <img class="rounded-t-lg" src="{{ asset('imgs/'.$item->img) }}" alt="" />
+      </a>
+      <div class="p-5">
+          <a href="#">
+              <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">{{$item->title}}</h5>
+          </a>
+      </div>
+    </div>
+
+    @endforeach
+</div>
+@else
+<div class="flex justify-center items-center">
+  <h1 class="font-semibold text-2xl">Tidak ada Informasi</h1>
+</div>
+@endif
+
+<div class="text-center mt-10">
+  <h1 class="font-bold text-2xl">ARTIKEL ANGKA KEMATIAN IBU</h1>
+</div>
+@if (!empty($data['artikel']))
 <div class="grid gap-4 grid-cols-2 mt-10">
     @foreach ($data['artikel'] as $item)
     <a href="{{ route('artikel.single.home', $item->id)}}">
@@ -31,7 +59,7 @@
 </div>
 @else
 <div class="flex justify-center items-center">
-  <h1 class="font-semibold text-2xl">Tidak ada artikel</h1>
+  <h1 class="font-semibold text-2xl">Tidak ada Artikel</h1>
 </div>
 @endif
 

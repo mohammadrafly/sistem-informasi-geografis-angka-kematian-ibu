@@ -39,6 +39,10 @@ Route::middleware(['guest'])->group(function () {
     Route::controller(AuthController::class)->group(function () {
         Route::match(['GET', 'POST'], '/login', 'index')->name('login');
     });
+    Route::controller(KasusController::class)->group(function () {
+        Route::get('/get/year', 'getKasusPerYear')->name('kasus.year.home');
+        Route::get('/get/kategori', 'getKasusPerKategori')->name('kasus.kategori.home');
+    });
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -66,6 +70,8 @@ Route::middleware(['auth'])->group(function () {
         });
         Route::controller(KasusController::class)->group(function () {
             Route::prefix('kasus')->group(function (){
+                Route::get('/get/year', 'getKasusPerYear')->name('kasus.year');
+                Route::get('/get/kategori', 'getKasusPerKategori')->name('kasus.kategori');
                 Route::match(['GET','POST'], '/', 'kasus')->name('kasus');
                 Route::match(['GET','POST'], '/update/{id}', 'kasusSingle')->name('kasus.single');
                 Route::match(['GET'], '/delete/{id}', 'kasusDelete')->name('kasus.delete');

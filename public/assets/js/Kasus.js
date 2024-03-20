@@ -93,7 +93,7 @@ function populateTable(response) {
         row.append($('<td>').addClass('px-6 py-4').text(kasus.usia_ibu));
         row.append($('<td>').addClass('px-6 py-4').text(kasus.tanggal));
         row.append($('<td>').addClass('px-6 py-4').text(kasus.nama_kategori));
-        row.append($('<td>').addClass('px-6 py-4').html(`<img src="${BASEURL}bukti_kematians/${kasus.bukti_kematian}" alt="Article Image">`));
+        row.append($('<td>').addClass('px-6 py-4').html(`<a href="${BASEURL}bukti_kematians/${kasus.bukti_kematian}" data-fancybox="gallery"><img src="${BASEURL}bukti_kematians/${kasus.bukti_kematian}" alt="Article Image" class="w-20 h-20 object-cover cursor-pointer"></a>`));
         row.append($('<td>').addClass('px-6 py-4').text(kasus.tempat_kematian));
         row.append($('<td>').addClass('px-6 py-4').text(kasus.estafet_rujukan));
         row.append($('<td>').addClass('px-6 py-4').text(kasus.alur));

@@ -104,7 +104,7 @@ response.forEach(function(artikel, index) {
     row.append($('<td>').addClass('px-6 py-4').text(artikel.author_name));
     row.append($('<td>').addClass('px-6 py-4').text(artikel.description.substring(0, 10) + (artikel.description.length > 10 ? '...' : '')));
     row.append($('<td>').addClass('px-6 py-4').text(artikel.category));  
-    row.append($('<td>').addClass('px-6 py-4').html(`<img src="${BASEURL}imgs/${artikel.img}" alt="Article Image">`));
+    row.append($('<td>').addClass('px-6 py-4').html(`<a href="${BASEURL}imgs/${artikel.img}" data-fancybox="gallery"><img src="${BASEURL}imgs/${artikel.img}" alt="Article Image" class="w-20 h-20 object-cover cursor-pointer"></a>`));
     let publishedText = '';
     if (artikel.published === '1') {
         publishedText = 'Published'

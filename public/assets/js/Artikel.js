@@ -104,7 +104,7 @@ response.forEach(function(artikel, index) {
     row.append($('<td>').addClass('px-6 py-4').text(artikel.author_name));
     row.append($('<td>').addClass('px-6 py-4').text(artikel.description.substring(0, 10) + (artikel.description.length > 10 ? '...' : '')));
     row.append($('<td>').addClass('px-6 py-4').text(artikel.category));  
-    row.append($('<td>').addClass('px-6 py-4').text(artikel.img));   
+    row.append($('<td>').addClass('px-6 py-4').html(`<img src="${BASEURL}imgs/${artikel.img}" alt="Article Image">`));
     let publishedText = '';
     if (artikel.published === '1') {
         publishedText = 'Published'

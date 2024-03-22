@@ -6,6 +6,10 @@
     Tambah {{ $data['title'] }}
 </button>
 
+<a href="{{ route('print.map') }}">
+    Print Map
+</a>
+
 <div id="form" class="hidden overflow-hidden border border-black transition-transform ease-in-out duration-300 max-h-0 bg-white p-5 rounded-lg shadow-lg">
     <form id="poiForm" enctype="multipart/form-data" class="mt-4">
         @csrf

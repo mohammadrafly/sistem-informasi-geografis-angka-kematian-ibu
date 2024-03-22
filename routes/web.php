@@ -22,31 +22,32 @@ use App\Http\Controllers\UserController;
 |
 */
 
-Route::middleware(['guest'])->group(function () { 
-    Route::controller(HomeController::class)->group(function () {
-        Route::match(['GET', 'POST'], '/', 'index')->name('home');
-        Route::prefix('artikel')->group(function (){
-            Route::match(['GET'], '/', 'artikelHome')->name('artikel.home');
-            Route::match(['GET'], '/post/{id}', 'artikelSingleHome')->name('artikel.single.home');
-            Route::match(['GET'], '/category/{id}', 'artikelCategoryHome')->name('artikel.category.home');
-        });
-        Route::prefix('peta')->group(function (){
-            Route::match(['GET'], '/resiko', 'peta')->name('peta');
-            Route::match(['GET'], '/resiko/get-daerah', 'getDaerah')->name('home.get.daerah');
-            Route::match(['GET'], '/resiko/get-poi', 'getPOI')->name('home.get.poi');
-        });
+Route::controller(HomeController::class)->group(function () {
+    Route::match(['GET', 'POST'], '/', 'index')->name('home');
+    Route::prefix('artikel')->group(function (){
+        Route::match(['GET'], '/', 'artikelHome')->name('artikel.home');
+        Route::match(['GET'], '/post/{id}', 'artikelSingleHome')->name('artikel.single.home');
+        Route::match(['GET'], '/category/{id}', 'artikelCategoryHome')->name('artikel.category.home');
     });
-    Route::controller(AuthController::class)->group(function () {
-        Route::match(['GET', 'POST'], '/login', 'index')->name('login');
+    Route::prefix('peta')->group(function (){
+        Route::match(['GET'], '/resiko', 'peta')->name('peta');
+        Route::match(['GET'], '/resiko/get-daerah', 'getDaerah')->name('home.get.daerah');
+        Route::match(['GET'], '/resiko/get-poi', 'getPOI')->name('home.get.poi');
     });
-    Route::controller(KasusController::class)->group(function () {
-        Route::get('/get/year', 'getKasusPerYear')->name('kasus.year.home');
-        Route::get('/get/kategori', 'getKasusPerKategori')->name('kasus.kategori.home');
-    });
+});
+Route::controller(AuthController::class)->group(function () {
+    Route::match(['GET', 'POST'], '/login', 'index')->name('login');
+});
+Route::controller(KasusController::class)->group(function () {
+    Route::get('/get/year', 'getKasusPerYear')->name('kasus.year.home');
+    Route::get('/get/kategori', 'getKasusPerKategori')->name('kasus.kategori.home');
 });
 
 Route::middleware(['auth'])->group(function () {
     Route::prefix('dashboard')->group(function () { 
+        Route::get('print/map', function () {
+            return view('pdf.map');
+        })->name('print.map');
         Route::controller(NotificationController::class)->group(function () {
             Route::get('/notification', 'index')->name('notification');
             Route::get('/notification/update', 'update')->name('notification.update');
@@ -70,6 +71,7 @@ Route::middleware(['auth'])->group(function () {
         });
         Route::controller(KasusController::class)->group(function () {
             Route::prefix('kasus')->group(function (){
+                Route::post('/export/pdf', 'exportPDF')->name('export.pdf');
                 Route::get('/get/year', 'getKasusPerYear')->name('kasus.year');
                 Route::get('/get/kategori', 'getKasusPerKategori')->name('kasus.kategori');
                 Route::match(['GET','POST'], '/', 'kasus')->name('kasus');

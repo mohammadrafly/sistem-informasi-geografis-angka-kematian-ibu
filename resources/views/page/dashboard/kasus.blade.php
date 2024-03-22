@@ -6,6 +6,15 @@
     Tambah {{ $data['title'] }}
 </button>
 
+<form action="{{route('export.pdf')}}" method="post">
+    @csrf
+    <label for="">Start Date</label>
+    <input type="date" name="start_date" id="start_date">
+    <label for="">End Date</label>
+    <input type="date" name="end_date" id="end_date">
+    <button type="submit" class="bg-blue-500 hover:bg-blue-700 border border-black text-white px-4 py-2 my-4 rounded">Export</button>
+</form>
+
 <div id="form" class="hidden overflow-hidden border border-black transition-transform ease-in-out duration-300 max-h-0 bg-white p-5 rounded-lg shadow-lg">
     <form id="kasusForm" enctype="multipart/form-data" class="mt-4">
         @csrf

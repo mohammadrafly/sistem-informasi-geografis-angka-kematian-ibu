@@ -9,6 +9,9 @@ use App\Models\POI;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Dompdf\Dompdf;
+use Illuminate\Support\Facades\View;
 
 class KasusController extends Controller
 {
@@ -29,6 +32,21 @@ class KasusController extends Controller
             return $fileName;
         }
         return null;
+    }
+
+    public function exportPDF(Request $request)
+    {
+        $startDate = Carbon::parse($request->start_date)->startOfDay();
+        $endDate = Carbon::parse($request->end_date)->endOfDay();
+        $data = Kasus::with('category')->whereBetween('created_at', [$startDate, $endDate])->get();
+
+        $pdf = new Dompdf();
+        $pdf->loadHtml(View::make('pdf.kasus', ['data' => $data])->render());
+        $pdf->setPaper('A4', 'landscape');
+
+        $pdf->render();
+
+        return $pdf->stream('kasus.pdf');
     }
 
     public function getKasusPerYear()

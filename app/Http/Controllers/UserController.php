@@ -39,6 +39,7 @@ class UserController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password), 
+                'role' => $request->role,
             ]);
 
             return $this->jsonResponse(true, 'Berhasil Menambah User.');
@@ -62,7 +63,7 @@ class UserController extends Controller
             }
     
             $user = User::find($id);
-            $user->update($request->only(['name', 'email']));
+            $user->update($request->only(['name', 'email', 'role']));
 
             return $this->jsonResponse(true, 'Berhasil Memperbarui User.');
         }

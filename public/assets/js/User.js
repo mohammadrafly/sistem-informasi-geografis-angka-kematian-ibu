@@ -92,8 +92,8 @@ function populateTable(response) {
         let roleText = '';
         if (user.role === 'admin') {
             roleText = 'Admin';
-        } else if (user.role === 'gizi_dinkes') {
-            roleText = 'Gizi Dinkes';
+        } else if (user.role === 'dinkes') {
+            roleText = 'Dinkes';
         } else {
             roleText = 'Bidan';
         }

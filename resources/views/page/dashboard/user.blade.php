@@ -23,7 +23,7 @@
             <select type="text" class="disabled:bg-gray-300 w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="role" id="role" placeholder="Role" required>
                 <option selected>Pilih Role</option>
                 <option value="admin">Admin</option>
-                <option value="gizi_dinkes">Gizi Dinkes</option>
+                <option value="dinkes">Dinkes</option>
                 <option value="bidan">Bidan</option>
             </select>
         </div>

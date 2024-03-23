@@ -14,6 +14,15 @@
     <form id="poiForm" enctype="multipart/form-data" class="mt-4">
         @csrf
         <div class="mb-4">
+            <label for="id_category" class="block text-gray-700 text-sm font-bold mb-2">Kategori</label>
+            <select type="text" class="disabled:bg-gray-300 w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="id_category" id="id_category" placeholder="Category" required>
+                <option selected>Pilih Kategori</option>
+                @foreach($data['category'] as $option)
+                <option value="{{ $option->id }}">{{ $option->nama_category }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="mb-4">
             <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nama Titik</label>
             <input type="text" class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="nama_titik" id="nama_titik" placeholder="Masukkan Nama Titik" required>
             <input type="number" id="id" name="id" hidden>
@@ -24,15 +33,6 @@
                 <option selected value="">Pilih Kasus</option>
                 @foreach($data['kasus'] as $option)
                 <option value="{{ $option->id }}">{{ $option->nama }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="mb-4">
-            <label for="id_category" class="block text-gray-700 text-sm font-bold mb-2">Kategori</label>
-            <select type="text" class="disabled:bg-gray-300 w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="id_category" id="id_category" placeholder="Category" required>
-                <option selected>Pilih Kategori</option>
-                @foreach($data['category'] as $option)
-                <option value="{{ $option->id }}">{{ $option->nama_category }}</option>
                 @endforeach
             </select>
         </div>
@@ -303,6 +303,26 @@
         getGeojsonDaerah();
         getGeojsonPoi();
     });
+
+    function categoryChange() {
+        var selectedCategory = document.getElementById('id_category').value;
+
+        var namaTitikInput = document.getElementById('nama_titik');
+        var idKasusInput = document.getElementById('id_kasus');
+
+        if (selectedCategory === "1") {
+            namaTitikInput.className = 'w-full border p-2 rounded border-gray-200 bg-gray-200 text-gray-400 focus:outline-none placeholder-gray-500';
+            namaTitikInput.disabled = true;
+            idKasusInput.disabled = false;
+        } else {
+            namaTitikInput.className = 'w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500';
+            namaTitikInput.disabled = false;
+            idKasusInput.disabled = true;
+        }
+    }
+
+    document.getElementById('id_category').addEventListener('change', categoryChange);
+
 </script>
 <script src="{{ asset('assets/js/POI.js') }}"></script>
 

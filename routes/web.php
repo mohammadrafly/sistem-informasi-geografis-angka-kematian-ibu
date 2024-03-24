@@ -69,6 +69,15 @@ Route::middleware(['auth'])->group(function () {
                 });
             });
         });
+        Route::middleware(['auth', 'role:dinkes'])->group(function () {
+            Route::controller(ArtikelController::class)->group(function () {
+                Route::prefix('artikel')->group(function (){
+                    Route::match(['GET','POST'], '/', 'artikel')->name('artikel');
+                    Route::match(['GET','POST'], '/update/{id}', 'artikelSingle')->name('artikel.single');
+                    Route::match(['GET'], '/delete/{id}', 'artikelDelete')->name('artikel.delete');
+                });
+            });
+        });
         Route::controller(KasusController::class)->group(function () {
             Route::prefix('kasus')->group(function (){
                 Route::post('/export/pdf', 'exportPDF')->name('export.pdf');

@@ -40,6 +40,7 @@ class KasusController extends Controller
         $endDate = Carbon::parse($request->end_date)->endOfDay();
         $data = Kasus::with('category')->whereBetween('created_at', [$startDate, $endDate])->get();
 
+        dd($data);
         $pdf = new Dompdf();
         $pdf->loadHtml(View::make('pdf.kasus', ['data' => $data])->render());
         $pdf->setPaper('A4', 'landscape');

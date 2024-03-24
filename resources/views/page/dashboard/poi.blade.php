@@ -6,7 +6,7 @@
     Tambah {{ $data['title'] }}
 </button>
 
-<a href="{{ route('print.map') }}">
+<a href="{{ route('print.map') }}" class="bg-blue-500 hover:bg-blue-700 border border-black text-white px-4 py-2 my-4 rounded">
     Print Map
 </a>
 

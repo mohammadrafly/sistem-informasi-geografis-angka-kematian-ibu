@@ -88,6 +88,7 @@ function populateTable(response) {
         var row = $('<tr>').addClass('bg-white border-b');
         row.append($('<td>').addClass('px-6 py-4').text(index + 1));
         row.append($('<td>').addClass('px-6 py-4').text(category.nama_category));
+        row.append($('<td>').addClass('px-6 py-4').text(category.deskripsi));
         var editButton = $('<button>')
             .addClass('font-medium text-white bg-blue-600 py-1 px-2 rounded-lg hover:underline')
             .text('Edit')
@@ -134,6 +135,7 @@ function editCategory(categoryId) {
             toggleCollapse('form');
             $('#id').val(response.message.id);
             $('#nama_category').val(response.message.nama_category);
+            $('#deskripsi').val(response.message.deskripsi);
             fetchData();
         },
         function(xhr, status, error) {

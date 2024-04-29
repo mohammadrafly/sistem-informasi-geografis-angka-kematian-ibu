@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('category_penyebab', function (Blueprint $table) {
             $table->id();
             $table->string('nama_category');
+            $table->text('deskripsi');
             $table->timestamps();
         });
     }

@@ -14,6 +14,10 @@
             <input type="text" class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="nama_category" id="nama_category" placeholder="Masukkan Nama Kategori" required>
             <input type="number" id="id" name="id" hidden>
         </div>
+        <div class="mb-4">
+            <label for="nama_category" class="block text-gray-700 text-sm font-bold mb-2">Deskripsi</label>
+            <textarea type="text" class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="deskripsi" id="deskripsi" required></textarea>
+        </div>
         <button type="button" onclick="saveCategory()" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">Simpan</button>
     </form>    
 </div>
@@ -36,6 +40,9 @@
                 </th>
                 <th scope="col" class="px-6 py-3">
                     Nama Kategori
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Deskripsi
                 </th>
                 <th scope="col" class="px-6 py-3">
                     Action

@@ -204,6 +204,7 @@ class KasusController extends Controller
     
             CategoryPenyebab::create([
                 'nama_category' => $request->nama_category,
+                'deskripsi' => $request->deskripsi,
             ]);
     
             return $this->jsonResponse(true, 'Berhasil Menambah Kategori Penyebab.');
@@ -227,7 +228,7 @@ class KasusController extends Controller
             }
     
             $categoryPenyebab = CategoryPenyebab::find($id);
-            $categoryPenyebab->update($request->only(['nama_category']));
+            $categoryPenyebab->update($request->only(['nama_category', 'deskripsi']));
     
             return $this->jsonResponse(true, 'Berhasil Memperbarui category penyebab.');
         }

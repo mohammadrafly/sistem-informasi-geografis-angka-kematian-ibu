@@ -466,6 +466,7 @@
                                 const tanggalKematianValue = formatValue(featureData.kasus?.tanggal);
                                 const usiaValue = formatValue(featureData.kasus?.usia_ibu);
                                 const penyebabValue = formatValue(featureData.penyebab?.nama_category);
+                                const deskripsiValue = formatValue(featureData.penyebab?.deskripsi);
                                 const estafetValue = formatValue(featureData.kasus?.estafet_rujukan);
                                 const alurValue = `${alurNames.join(' -> ')}`;
                                 const masaValue = formatValue(featureData.kasus?.masa_kematian);
@@ -494,16 +495,13 @@
                                     content = `
                                     <div class="font-sm">
                                         <p>
-                                        Nama     : ${namaValue ?? ''}<br/>
                                         Alamat   : ${alamatValue ?? ''}<br/>
                                         Tanggal  : ${tanggalKematianValue ?? ''}<br/>
                                         Usia     : ${usiaValue ?? ''}<br/>
                                         Penyebab : ${penyebabValue ?? ''}<br/>
-                                        Estafet  : ${estafetValue ?? ''} <br/>
-                                        Alur     : ${alurValue ?? ''} <br/>
-                                        Masa Kematian: ${masaValue ?? ''} <br/>
+                                        Pencegahan : ${deskripsiValue} <br/>
                                         </p>
-                                        <p>Rumah Sakit terdekat: ${matchingFeatureData.nama_titik} (${roundedDistance} Meter)</p>
+                                        <p>Fasilitas Pelayanan Kesehatan Terdekat: ${matchingFeatureData.nama_titik} (${roundedDistance} Meter)</p>
                                     </div>
                                     `;
                                 }

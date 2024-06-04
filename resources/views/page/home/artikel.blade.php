@@ -6,15 +6,15 @@
   <h1 class="font-bold text-2xl">INFORMASI ANGKA KEMATIAN IBU</h1>
 </div>
 @if (!empty($data['informasi']))
-<div class="grid gap-4 grid-cols-2 mt-10">
+<div class="grid gap-2 grid-cols-4 mt-10">
     @foreach ($data['informasi'] as $item)
     <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow">
       <a href="{{ route('artikel.single.home', $item->id)}}">
           <img class="rounded-t-lg" src="{{ asset('imgs/'.$item->img) }}" alt="" />
       </a>
-      <div class="p-5">
+      <div class="p-1">
           <a href="#">
-              <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">{{$item->title}}</h5>
+              <h5 class="mb-2 text-2xl font-bold text-center tracking-tight text-gray-900">{{$item->title}}</h5>
           </a>
       </div>
     </div>
@@ -31,7 +31,7 @@
   <h1 class="font-bold text-2xl">ARTIKEL ANGKA KEMATIAN IBU</h1>
 </div>
 @if (!empty($data['artikel']))
-<div class="grid gap-4 grid-cols-2 mt-10">
+<div class="grid gap-3 grid-cols-2 mt-10">
     @foreach ($data['artikel'] as $item)
     <a href="{{ route('artikel.single.home', $item->id)}}">
         <div class="bg-white border rounded-xl shadow-sm sm:flex">

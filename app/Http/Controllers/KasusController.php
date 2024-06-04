@@ -38,9 +38,9 @@ class KasusController extends Controller
     {
         $startDate = Carbon::parse($request->start_date)->startOfDay();
         $endDate = Carbon::parse($request->end_date)->endOfDay();
-        $data = Kasus::with('category')->whereBetween('created_at', [$startDate, $endDate])->get();
+        $data = Kasus::with('category')->whereBetween('tanggal', [$startDate, $endDate])->get();
 
-        dd($data);
+        
         $pdf = new Dompdf();
         $pdf->loadHtml(View::make('pdf.kasus', ['data' => $data])->render());
         $pdf->setPaper('A4', 'landscape');
@@ -52,7 +52,7 @@ class KasusController extends Controller
 
     public function getKasusPerYear()
     {
-        $countedData = Kasus::select(DB::raw('YEAR(created_at) as year'), DB::raw('count(*) as total'))
+        $countedData = Kasus::select(DB::raw('YEAR(tanggal) as year'), DB::raw('count(*) as total'))
                             ->groupBy('year')
                             ->get()
                             ->pluck('total', 'year')
@@ -116,7 +116,12 @@ class KasusController extends Controller
             }
 
             $bukti_kematian = $this->handleFileUpload($request);
-            $alur = implode(',', $request->alur);
+
+            if (is_array($request->alur)) {
+                $alur = implode(',', $request->alur);
+            } else {
+                $alur = '0';
+            }
 
             $data = Kasus::create([
                 'nama' => $request->nama,

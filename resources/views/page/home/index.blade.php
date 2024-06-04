@@ -3,13 +3,13 @@
 @section('content')
 
 <div class="flex item-center">
-    <div class="flex justify-between w-full">
-        <div class="font-semibold">
-            <div class="w-[500px]">
-                <p class="text-2xl">Selamat Datang di Sistem Informasi Geografis Angka Kematian Ibu Dinas Kabupaten Bondowoso</p>
+    <div class="w-full py-5">
+        <div class="font-semibold flex justify-center items-center">
+            <div class="w-[750px]">
+                <p class="text-3xl text-center text-balance">Selamat Datang di Sistem Informasi Geografis Angka Kematian Ibu Dinas Kabupaten Bondowoso</p>
             </div>
         </div>
-        <div class="w-full h-[500px] ml-5">
+        <div class="w-full h-[500px] py-5">
             <div id="map" class="w-full h-[500px] rounded-lg border border-black">
                 <div id="legend" class="leaflet-bottom leaflet-left"></div>
             </div>
@@ -254,17 +254,15 @@
                                     content = `
                                     <div class="font-sm">
                                         <p>
-                                            Nama     : ${namaValue ?? ''}<br/>
+                                            
                                             Alamat   : ${alamatValue ?? ''}<br/>
                                             Tanggal  : ${tanggalKematianValue ?? ''}<br/>
                                             Usia     : ${usiaValue ?? ''}<br/>
                                             Penyebab : <button id="penyebabButton">${penyebabValue ?? ''}</button><br/>
                                             Pencegahan : ${deskripsiValue} <br/>
-                                            Estafet  : ${estafetValue ?? ''} <br/>
-                                            Alur     : ${alurValue ?? ''} <br/>
-                                            Masa Kematian: ${masaValue ?? ''} <br/>
+                                           
                                         </p>
-                                        <p>Rumah Sakit terdekat: ${matchingFeatureData.nama_titik} (${roundedDistance} Meter)</p>
+                                        <p>Fasilitas Pelayanan Kesehatan Terdekat: ${matchingFeatureData.nama_titik} (${roundedDistance} Meter)</p>
                                     </div>
                                     `;
                                 }
@@ -318,3 +316,4 @@
 </script>
 
 @endSection()
+

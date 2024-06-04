@@ -9,7 +9,7 @@ use App\Models\POI;
 use App\Models\Kasus;
 
 class HomeController extends Controller
-{    
+{
     private function jsonResponse($success, $message, $statusCode = 200)
     {
         return response()->json([
@@ -60,7 +60,7 @@ class HomeController extends Controller
                     return $group->count();
                 }),
             ];
-    
+
             return $this->jsonResponse(true, $groupedData, 200);
         }
 
@@ -70,7 +70,7 @@ class HomeController extends Controller
 
         return view('page.home.peta', compact('data'));
     }
-    
+
     public function getPOI()
     {
         $data = POI::with('kasus', 'category', 'penyebab')->get();
@@ -79,7 +79,10 @@ class HomeController extends Controller
 
     public function getDaerah()
     {
-        $data = Daerah::all();
-        return $this->jsonResponse(true, $data, 200);
+        $data = Daerah::whereHas('poi', function ($query) {
+            $query->whereNotNull('id_kasus');
+        })->with('poi')->get();
+
+        return response()->json($data);
     }
 }

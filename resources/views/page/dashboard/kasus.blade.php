@@ -50,6 +50,15 @@
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">PNG, JPG, JPEG</p>
         </div>
         <div class="mb-4">
+            <label for="masa_kematian" class="block text-gray-700 text-sm font-bold mb-2">Masa Kematian</label>
+            <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="pilih_masa" id="pilih_masa" onchange="toggleForm()">
+                <option selected disabled>Pilih Masa Kematian</option>
+                <option value="hamil">Hamil</option>
+                <option value="persalinan">Persalinan</option>
+                <option value="nifas">Nifas</option>
+            </select>
+        </div>
+        <div class="mb-4">
             <label for="tempat_kematian" class="block text-gray-700 text-sm font-bold mb-2">Tempat Kematian</label>
             <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="tempat_kematian" id="tempat_kematian" required>
                 <option selected disabled>Pilih Tempat Kematian</option>
@@ -74,29 +83,46 @@
         <div class="mb-4">
             <label for="estafet_rujukan" class="block text-gray-700 text-sm font-bold mb-2">Estafet Rujukan</label>
             <input type="text" class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="estafet_rujukan" id="estafet_rujukan" placeholder="Masukkan Estafet Rujukan" required>
-        </div>        
+        </div>
         <div class="mb-4">
-            <label for="masa_kematian" class="block text-gray-700 text-sm font-bold mb-2">Masa Kematian</label>
-            <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="pilih_masa" id="pilih_masa" onchange="toggleForm()">
-                <option selected disabled>Pilih Masa Kematian</option>
-                <option value="hamil">Hamil</option>
-                <option value="persalinan">Persalinan</option>
-                <option value="nifas">Nifas</option>
+            <label for="gravida" class="block text-gray-700 text-sm font-bold mb-2">Gravida</label>
+            <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="gravida" id="gravida">
+                <option selected disabled>Pilih Gravida</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
             </select>
         </div>
-        
+        <div class="mb-4">
+            <label for="penolong_pertama" class="block text-gray-700 text-sm font-bold mb-2">Penolong Pertama</label>
+            <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="penolong_pertama" id="penolong_pertama">
+                <option selected disabled>Pilih Penolong Pertama</option>
+                <option value="non_medis">Non Medis</option>
+                <option value="medis">Medis</option>
+            </select>
+        </div>
+        <div class="mb-4">
+            <label for="jenis" class="block text-gray-700 text-sm font-bold mb-2">Jenis Kematian</label>
+            <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="jenis" id="jenis">
+                <option selected disabled>Pilih Jenis Kematian</option>
+                <option value="kematian_mati">Kelahiran Mati</option>
+                <option value="kematian_hidup">Kelahiran Hidup</option>
+            </select>
+        </div>
         <div id="form_hamil" class="masa-form hidden mb-4">
             <label for="umur_kehamilan" class="block text-gray-700 text-sm font-bold mb-2">Umur Kehamilan (Minggu)</label>
             <input type="text" class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="umur_kehamilan" id="umur_kehamilan" placeholder="Masukkan Umur Kehamilan" required>
         </div>
-        
+
         <div id="form_persalinan" class="masa-form hidden mb-4">
             <label for="< 6 Jam PP" class="block text-gray-700 text-sm font-bold mb-2">< 6 Jam PP</label>
             <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="persalinan" id="persalinan" required>
                 <option selected value="1">True</option>
             </select>
         </div>
-        
+
         <div id="form_nifas" class="masa-form hidden mb-4">
             <label for="nifas" class="block text-gray-700 text-sm font-bold mb-2">Nifas</label>
             <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="nifas" id="nifas">
@@ -117,7 +143,7 @@
             </select>
         </div>
         <button type="button" onclick="saveKasus()" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">Simpan</button>
-    </form>    
+    </form>
 </div>
 
 <div class="relative overflow-x-auto shadow-lg rounded-lg mt-5 p-5 bg-gray-50 border border-black">

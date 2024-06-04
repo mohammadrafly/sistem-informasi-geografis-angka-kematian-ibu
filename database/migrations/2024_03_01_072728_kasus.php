@@ -18,12 +18,15 @@ return new class extends Migration
             $table->string('usia_ibu');
             $table->string('tanggal');
             $table->foreignId('id_category')->constraint('category_penyebab');
+            $table->enum('penolong_pertama', ['medis', 'non_medis']);
+            $table->integer('gravida');
             $table->string('bukti_kematian');
             $table->string('tempat_kematian');
             $table->string('estafet_rujukan');
             $table->string('alur');
             $table->string('masa_kematian');
             $table->string('hari_kematian');
+            $table->enum('jenis', ['kelahiran_mati', 'kelahiran_hidup']);
             $table->timestamps();
         });
     }

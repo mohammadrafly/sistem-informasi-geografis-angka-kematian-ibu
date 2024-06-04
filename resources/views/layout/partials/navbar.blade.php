@@ -9,11 +9,6 @@
             <div class="flex items-center">
                 <ul class="flex">
                     <li class="px-3">
-                        <a href="{{ route('home')}}">
-                            Tentang
-                        </a>
-                    </li>
-                    <li class="px-3">
                         <a href="{{ route('peta') }}">
                             Persebaran
                         </a>

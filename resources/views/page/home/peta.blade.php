@@ -42,9 +42,8 @@
             <div id="map" class="w-full min-h-screen rounded-lg">
                 <div id="legend" class="leaflet-bottom leaflet-left"></div>
             </div>
-            
+
         </div>
-        <div id="colorToggleButtonContainer" class="mt-5 p-2 w-fit rounded-lg bg-blue-500 text-white"></div>
     </div>
 </div>
 
@@ -53,7 +52,7 @@
     <p class="font-bold">(Data dapat berubah sewaktu-waktu)</p>
 </div>
 
-<div class="grid grid-cols-2 gap-5">
+<div class="grid grid-cols-3 gap-5 h-[500px]">
     <div class="my-5 mr-5 w-full bg-white border border-black rounded-lg shadow p-4 md:p-6">
         <div class="font-semibold">Data Kasus/Tahun</div>
         <div id="line-chart"></div>
@@ -61,6 +60,10 @@
     <div class="my-5 mr-5 w-full bg-white border border-black rounded-lg shadow p-4 md:p-6">
         <div class="font-semibold">Data Kasus/Penyebab</div>
         <div id="line-chart-penyebab"></div>
+    </div>
+    <div class="my-5 mr-5 w-full bg-white border border-black rounded-lg shadow p-4 md:p-6">
+        <div class="font-semibold">Data Penolong Pertama</div>
+        <div id="line-chart-penolong"></div>
     </div>
 </div>
 
@@ -73,7 +76,6 @@
         fetch('{{route('kasus.year.home')}}')
             .then(response => response.json())
             .then(data => {
-                console.log(data)
                 renderChart(data);
             })
             .catch(error => {
@@ -86,7 +88,7 @@
             const latestYearIndex = years.length - 1;
             const maxYearsToShow = 5;
 
-            let startYearIndex = Math.max(latestYearIndex - maxYearsToShow + 1, 0); 
+            let startYearIndex = Math.max(latestYearIndex - maxYearsToShow + 1, 0);
             if (years.length < maxYearsToShow) {
                 startYearIndex = 0;
             }
@@ -98,7 +100,7 @@
                 chart: {
                     height: "100%",
                     maxWidth: "100%",
-                    type: "line",
+                    type: "bar",
                     fontFamily: "Inter, sans-serif",
                     dropShadow: {
                     enabled: false,
@@ -172,7 +174,6 @@
         fetch('{{route('kasus.kategori.home')}}')
             .then(response => response.json())
             .then(data => {
-                console.log(data)
                 renderChartPenyebab(data);
             })
             .catch(error => {
@@ -188,7 +189,7 @@
             chart: {
                 height: "100%",
                 maxWidth: "100%",
-                type: "line",
+                type: "bar",
                 fontFamily: "Inter, sans-serif",
                 dropShadow: {
                     enabled: false,
@@ -258,9 +259,99 @@
         }
     }
 
+    function fetchDataPenolong() {
+        fetch('{{route('kasus.penolong.home')}}')
+            .then(response => response.json())
+            .then(data => {
+                renderChartPenolong(data);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+
+    function renderChartPenolong(chartData) {
+        const penolong = Object.keys(chartData);
+        const formattedData = penolong.map(penolong => ({ x: penolong === 'non_medis' ? 'Non Medis' : penolong === 'medis' ? 'Medis' : penolong, y: chartData[penolong] }));
+
+        const options = {
+            chart: {
+                height: "100%",
+                maxWidth: "100%",
+                type: "bar",
+                fontFamily: "Inter, sans-serif",
+                dropShadow: {
+                    enabled: false,
+                },
+                toolbar: {
+                    show: false,
+                },
+            },
+            tooltip: {
+                enabled: true,
+                x: {
+                    show: false,
+                },
+            },
+            dataLabels: {
+                enabled: false,
+            },
+            stroke: {
+                width: 6,
+            },
+            grid: {
+                show: true,
+                strokeDashArray: 4,
+                padding: {
+                    left: 2,
+                    right: 2,
+                    top: -26
+                },
+            },
+            series: [
+                {
+                    name: "Kasus",
+                    data: formattedData,
+                    color: "#1A56DB",
+                },
+            ],
+            legend: {
+                show: false
+            },
+            stroke: {
+                curve: 'smooth'
+            },
+            xaxis: {
+                categories: penolong.map(penolong => penolong === 'non_medis' ? 'Non Medis' : penolong === 'medis' ? 'Medis' : penolong), // Changing categories
+                labels: {
+                    show: true,
+                    style: {
+                        fontFamily: "Inter, sans-serif",
+                        cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+                    }
+                },
+                axisBorder: {
+                    show: false,
+                },
+                axisTicks: {
+                    show: false,
+                },
+            },
+            yaxis: {
+                show: false,
+            },
+        }
+
+        if (document.getElementById("line-chart-penolong") && typeof ApexCharts !== 'undefined') {
+            const chart = new ApexCharts(document.getElementById("line-chart-penolong"), options);
+            chart.render();
+        }
+    }
+
     window.addEventListener('load', () => {
         fetchData();
         fetchDataPenyebab();
+        fetchDataPenolong();
     });
 
     var map = L.map('map').setView([-7.923474796128599, 113.81854654735284], 13);
@@ -290,53 +381,53 @@
         };
     }
 
-    function toggleColor() {
-        toggleState = !toggleState; 
-
-        geojsonLayerGroup.clearLayers();
-        geojsonLayers = [];
-
-        getGeojsonDaerah();
-    }
-
-    var colorToggleButton = document.createElement('button');
-    colorToggleButton.textContent = 'Mode';
-    colorToggleButton.onclick = toggleColor;
-    document.getElementById('colorToggleButtonContainer').appendChild(colorToggleButton);
-
     function getGeojsonDaerah() {
         $.ajax({
             url: BASEURL + 'peta/resiko/get-daerah',
             success: function(data) {
-                var dataArray = data.message;
+                var dataArray = data;
 
                 $.ajax({
                     url: BASEURL + 'peta/resiko/get-poi',
                     success: function(poiData) {
+                        var kelahiranMati = 0;
+                        var kelahiranHidup = 0;
+
                         var poiCounts = poiData.reduce(function(acc, poi) {
                             if (poi.category.nama_category === 'AKI') {
-                                var existingEntry = acc.find(entry => entry.id_daerah === poi.id_daerah);
+                                var existingEntry = acc.find(entry => entry.daerah_id === poi.id_daerah);
                                 if (existingEntry) {
-                                    existingEntry.total++;
+                                    var existingKasus = existingEntry.kasus || [];
+                                    var existingKasusCount = existingKasus.find(kasus => kasus.jenis === poi.kasus.jenis);
+                                    if (existingKasusCount) {
+                                        existingKasusCount.total++;
+
+                                        if (poi.kasus.jenis === 'kelahiran_mati') {
+                                            kelahiranMati++;
+                                        } else if (poi.kasus.jenis === 'kelahiran_hidup') {
+                                            kelahiranHidup++;
+                                        }
+
+                                    } else {
+                                        existingKasus.push({ jenis: poi.kasus.jenis, total: 1 });
+                                    }
                                 } else {
-                                    acc.push({id_daerah: poi.id_daerah, total: 1});
+                                    acc.push({ id_daerah: poi.daerah_id, kasus: [{ jenis: poi.kasus.jenis, total: 1 }] });
                                 }
                             }
                             return acc;
                         }, []);
 
                         function getColor(count) {
-                            if (count < 3) return 'green';
-                            if (count >= 3 && count <= 6) return 'yellow';
-                            if (count > 6) return 'red';
+                            if (count < 30) return 'green';
+                            if (count >= 30 && count <= 100) return 'yellow';
+                            if (count > 100) return 'red';
                         }
 
                         dataArray.forEach(function(featureData) {
                             var Daerah = createGeoJSONFeature(JSON.parse(featureData.geojson.replace(/"/g, '')));
                             var poiDataForDaerah = poiCounts.find(poi => poi.id_daerah === featureData.id) || {total: 0};
-                            var color = getColor(poiDataForDaerah.total);
-                            var finalColor = toggleState ? color : featureData.warna;
-
+                            var finalColor = getColor(kelahiranMati ?? 1 / kelahiranHidup ?? 1);
                             var LayerDaerah = L.geoJSON(Daerah, {
                                 style: {
                                     fillColor: finalColor,
@@ -408,8 +499,8 @@
                                     <path fill-rule="evenodd" d="M12 20a7.966 7.966 0 0 1-5.002-1.756l.002.001v-.683c0-1.794 1.492-3.25 3.333-3.25h3.334c1.84 0 3.333 1.456 3.333 3.25v.683A7.966 7.966 0 0 1 12 20ZM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10c0 5.5-4.44 9.963-9.932 10h-.138C6.438 21.962 2 17.5 2 12Zm10-5c-1.84 0-3.333 1.455-3.333 3.25S10.159 13.5 12 13.5c1.84 0 3.333-1.455 3.333-3.25S13.841 7 12 7Z" clip-rule="evenodd"/>
                                 </svg>
                             ` : `
-                                <svg class="w-5 h-5 bg-white rounded-full" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="${featureData.warna}" viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4.243a1 1 0 1 0-2 0V11H7.757a1 1 0 1 0 0 2H11v3.243a1 1 0 1 0 2 0V13h3.243a1 1 0 1 0 0-2H13V7.757Z" clip-rule="evenodd"/>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="${featureData.warna}" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5  bg-white rounded-full">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                                 </svg>
                             `;
 
@@ -507,8 +598,8 @@
                                 }
 
                                 const popupContent = `
-                                    <h4 class="font-semibold">${featureData.nama_titik} - ${featureData.category.nama_category}</h4>   
-                                    ${content}      
+                                    <h4 class="font-semibold">${featureData.nama_titik} - ${featureData.category.nama_category}</h4>
+                                    ${content}
                                 `;
 
                                 const popup = L.popup({ closeButton: true })
@@ -535,15 +626,15 @@
         legend.onAdd = function(map) {
             var div = L.DomUtil.create('div', 'info legend bg-white p-4 rounded-lg border border-black');
             div.innerHTML += '<h4 class="text-lg font-semibold mb-2">Status Resiko</h4>';
-            div.innerHTML += `<div class="flex"> 
+            div.innerHTML += `<div class="flex">
                                 <div class="bg-red-500 px-5 m-1"></div>
                                 <h1>Resiko Tinggi</h1>
                             </div>`;
-            div.innerHTML += `<div class="flex"> 
+            div.innerHTML += `<div class="flex">
                                 <div class="bg-yellow-400 px-5 m-1"></div>
                                 <h1>Resiko Sedang</h1>
                             </div>`;
-            div.innerHTML += `<div class="flex"> 
+            div.innerHTML += `<div class="flex">
                                 <div class="bg-green-500 px-5 m-1"></div>
                                 <h1>Resiko Rendah</h1>
                             </div>`;
@@ -558,15 +649,15 @@
             url: '{{ route('peta') }}',
             success: function(data) {
                 var timestamp = new Date().toLocaleString();
-                populateTablePenyebab(data, timestamp); 
-                populateTableTempat(data, timestamp); 
-                updateButtonTitle(timestamp); 
+                populateTablePenyebab(data, timestamp);
+                populateTableTempat(data, timestamp);
+                updateButtonTitle(timestamp);
             },
             error: function(xhr) {
                 console.error('Error:', xhr.statusText);
             }
         });
-        
+
     }
 
     function updateButtonTitle(timestamp) {
@@ -600,7 +691,6 @@
                 var row = '<tr><td class="px-4 py-2">' + group + '</td><td class="px-4 py-2 text-right">' + count + '</td></tr>';
                 tableBody.innerHTML += row;
             });
-            console.log(groupCounts);
         } else {
             console.error("Data or data.message.groupTempat is undefined or not in the expected format.");
         }
@@ -618,7 +708,6 @@
                 var row = '<tr><td class="px-4 py-2">' + group + '</td><td class="px-4 py-2 text-right">' + count + '</td></tr>';
                 tableBody.innerHTML += row;
             });
-            console.log(groupCounts);
         } else {
             console.error("Data or data.message.groupPenyebab is undefined or not in the expected format.");
         }

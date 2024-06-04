@@ -112,7 +112,7 @@ function populateTable(response) {
             .click(function() {
                 editKasus(kasus.id);
             });
-        
+
         var deleteButton = $('<button>')
             .addClass('ml-2 font-medium text-white bg-red-600 py-1 px-2 rounded-lg hover:underline')
             .text('Delete')
@@ -120,7 +120,7 @@ function populateTable(response) {
             .click(function() {
                 deleteKasus(kasus.id);
             });
-        
+
         row.append($('<td>').addClass('px-6 py-4').append(editButton).append(deleteButton));
 
         tableBody.append(row);
@@ -185,6 +185,8 @@ function editKasus(kasusId) {
                 $('#nama').val(response.message.nama);
                 $('#alamat').val(response.message.alamat);
                 $('#usia_ibu').val(response.message.usia_ibu);
+                $('#gravida').val(response.message.gravida);
+                $('#penolong_pertama').val(response.message.penolong_pertama);
                 $('#tanggal').val(response.message.tanggal);
                 $('#id_category').val(response.message.id_category);
                 $('#bukti_kematian').attr('src', response.message.bukti_kematian);
@@ -193,7 +195,7 @@ function editKasus(kasusId) {
                 $('#alur').val(response.message.alur);
                 $('#masa_kematian').val(response.message.masa_kematian);
                 $('#hari_kematian').val(response.message.hari_kematian);
-            
+                $('#jenis').val(response.message.jenis);
                 fetchData();
             } else {
                 console.error('Invalid response format:', response);

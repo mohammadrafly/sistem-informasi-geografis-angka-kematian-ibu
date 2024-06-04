@@ -23,7 +23,7 @@ use App\Http\Controllers\UserController;
 */
 
 Route::controller(HomeController::class)->group(function () {
-    Route::match(['GET', 'POST'], '/', 'index')->name('home');
+    Route::redirect('/', 'peta/resiko')->name('home');
     Route::prefix('artikel')->group(function (){
         Route::match(['GET'], '/', 'artikelHome')->name('artikel.home');
         Route::match(['GET'], '/post/{id}', 'artikelSingleHome')->name('artikel.single.home');
@@ -41,10 +41,11 @@ Route::controller(AuthController::class)->group(function () {
 Route::controller(KasusController::class)->group(function () {
     Route::get('/get/year', 'getKasusPerYear')->name('kasus.year.home');
     Route::get('/get/kategori', 'getKasusPerKategori')->name('kasus.kategori.home');
+    Route::get('/get/penolong', 'getKasusPerPenolong')->name('kasus.penolong.home');
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::prefix('dashboard')->group(function () { 
+    Route::prefix('dashboard')->group(function () {
         Route::get('print/map', function () {
             return view('pdf.map');
         })->name('print.map');

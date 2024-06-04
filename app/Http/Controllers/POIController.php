@@ -17,30 +17,30 @@ class POIController extends Controller
             'message' => $message
         ], $statusCode);
     }
-    
+
     private function handleFileUpload(Request $request)
     {
         if ($request->hasFile('geojson')) {
             $geojson = $request->file('geojson');
-            
+
             $content = file_get_contents($geojson->getPathname());
-            
+
             $data = json_decode($content, true);
-            
+
             $coordinates = [];
             foreach ($data['features'] as $feature) {
                 if (isset($feature['geometry']['coordinates'])) {
                     $coordinates = array_merge($coordinates, $feature['geometry']['coordinates']);
                 }
             }
-    
+
             $jsContent = json_encode($coordinates, JSON_PRETTY_PRINT);
 
             return $jsContent;
         }
         return null;
-    }    
-    
+    }
+
     public function getPOI()
     {
         $data = POI::with('kasus', 'category', 'penyebab')->get();
@@ -56,7 +56,7 @@ class POIController extends Controller
 
                 $query->leftJoin('kasus', 'poi.id_kasus', '=', 'kasus.id')
                       ->leftJoin('category_poi', 'poi.id_category', '=', 'category_poi.id');
-          
+
                 if ($request->has('search')) {
                     $searchTerm = $request->input('search');
                     $query->where('poi.nama_titik', 'like', "%$searchTerm%")
@@ -65,20 +65,20 @@ class POIController extends Controller
                             ->orWhere('category_poi.nama_category', 'like', "%$searchTerm%")
                             ->orWhere('poi.warna', 'like', "%$searchTerm%");
                 }
-            
+
                 $data = $query->select('poi.*', 'kasus.nama as nama', 'category_poi.nama_category as nama_kategori')
                                 ->paginate($perPage);
-      
+
                 return $this->jsonResponse(true, $data, 200);
             }
-    
+
             $geojson = $this->handleFileUpload($request);
 
             $poi = POI::create([
                 'nama_titik' => $request->nama_titik,
                 'geojson' => $geojson,
                 'warna' => $request->warna,
-                'id_daerah' => $request->id_daerah,
+                'daerah_id' => $request->id_daerah,
                 'id_category' => $request->id_category,
                 'id_kasus' => $request->id_kasus,
             ]);
@@ -94,7 +94,7 @@ class POIController extends Controller
             'kasus' => empty($existingIds) ? Kasus::all() : Kasus::whereNotIn('id', $existingIds)->get(),
             'daerah' => Daerah::all(),
             'poi' => POI::with('kasus', 'category', 'daerah')->get(),
-        ];        
+        ];
 
         return view('page.dashboard.poi', compact('data'));
     }
@@ -105,14 +105,14 @@ class POIController extends Controller
             if (!POI::find($id)) {
                 return $this->jsonResponse(false, 'Poi not found.', 404);
             }
-    
+
             if ($request->isMethod('get')) {
                 return $this->jsonResponse(true, POI::with('kasus', 'category', 'daerah')->find($id), 200);
             }
-    
+
             $poi = POI::find($id);
-            $poi->update($request->only(['nama_titik', 'warna', 'id_kasus', 'id_category', 'id_daerah']));
-    
+            $poi->update($request->only(['nama_titik', 'warna', 'id_kasus', 'id_category', 'daerah_id']));
+
             $geojson = $this->handleFileUpload($request);
             if ($geojson) {
                 $poi->geojson = $geojson;
@@ -143,21 +143,21 @@ class POIController extends Controller
             if ($request->isMethod('get')) {
                 $perPage = $request->input('per_page', 10);
                 $query = CategoryPOI::query();
-    
+
                 if ($request->has('search')) {
                     $searchTerm = $request->input('search');
                     $query->where('nama_category', 'like', "%$searchTerm%");
                 }
-    
+
                 $categories = $query->paginate($perPage);
-    
+
                 return $this->jsonResponse(true, $categories, 200);
             }
-    
+
             CategoryPOI::create([
                 'nama_category' => $request->nama_category,
             ]);
-    
+
             return $this->jsonResponse(true, 'Berhasil Menambah Kategori Point Of Interest.');
         }
 
@@ -173,14 +173,14 @@ class POIController extends Controller
             if (!CategoryPOI::find($id)) {
                 return $this->jsonResponse(false, 'Category poi not found.', 404);
             }
-    
+
             if ($request->isMethod('get')) {
                 return $this->jsonResponse(true, CategoryPOI::find($id), 200);
             }
-    
+
             $categorypoi = CategoryPOI::find($id);
             $categorypoi->update($request->only(['nama_category']));
-    
+
             return $this->jsonResponse(true, 'Berhasil Memperbarui Category poi.');
         }
     }

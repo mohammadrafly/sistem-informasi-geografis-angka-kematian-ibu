@@ -13,7 +13,7 @@
                 </svg>
             </div>
             <p class="font-bold text-2xl ">{{ $data['artikel'] }}</p>
-        </a>  
+        </a>
         <a href="#" class="block max-w-lg p-6 bg-[#A1EEBD] text-gray-900 border border-black shadow-xl rounded-lg">
             <div class="flex justify-between">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight ">Kasus</h5>
@@ -22,7 +22,7 @@
                 </svg>
             </div>
             <p class="font-bold text-2xl ">{{ $data['kasus'] }}</p>
-        </a>  
+        </a>
         <a href="#" class="block max-w-lg p-6 bg-[#F6F7C4] text-gray-900 border border-black shadow-xl rounded-lg">
             <div class="flex justify-between">
                 <h5 class="mb-2 text-2xl font-bold tracking-tight ">Pengguna</h5>
@@ -31,7 +31,7 @@
                 </svg>
             </div>
             <p class="font-bold text-2xl ">{{ $data['pengguna'] }}</p>
-        </a> 
+        </a>
     </div>
 </div>
 
@@ -65,7 +65,7 @@
             const latestYearIndex = years.length - 1;
             const maxYearsToShow = 5;
 
-            let startYearIndex = Math.max(latestYearIndex - maxYearsToShow + 1, 0); 
+            let startYearIndex = Math.max(latestYearIndex - maxYearsToShow + 1, 0);
             if (years.length < maxYearsToShow) {
                 startYearIndex = 0;
             }
@@ -77,7 +77,7 @@
                 chart: {
                     height: "100%",
                     maxWidth: "100%",
-                    type: "line",
+                    type: "bar",
                     fontFamily: "Inter, sans-serif",
                     dropShadow: {
                     enabled: false,
@@ -153,12 +153,12 @@
         });
 
     var map = L.map('map').setView([-7.923474796128599, 113.81854654735284], 13);
-    
+
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map); 
-    
+    }).addTo(map);
+
     function createGeoJSONFeature(coordinates) {
         return {
             "type": "FeatureCollection",
@@ -191,7 +191,7 @@
                     weight: 2,
                     cursor: 'pointer'
                 },
-                onEachFeature: function(feature, layer) { 
+                onEachFeature: function(feature, layer) {
                     layer.on({
                     mouseover: function(e) {
                         layer.setStyle({ fillOpacity: 0.3 });
@@ -314,8 +314,8 @@
                                 }
 
                                 const popupContent = `
-                                    <h4>${featureData.nama_titik} - ${featureData.category.nama_category}</h4>   
-                                    ${content}      
+                                    <h4>${featureData.nama_titik} - ${featureData.category.nama_category}</h4>
+                                    ${content}
                                 `;
 
                                 const popup = L.popup({ closeButton: true })
@@ -332,7 +332,7 @@
                 console.error('Error fetching GeoJSON:', error);
             });
     }
-    
+
     $(document).ready(function() {
         getGeojsonDaerah();
         getGeojsonPoi();

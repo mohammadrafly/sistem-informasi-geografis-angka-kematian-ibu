@@ -10,6 +10,7 @@ use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use DateTime;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\View;
 
@@ -40,14 +41,19 @@ class KasusController extends Controller
         $endDate = Carbon::parse($request->end_date)->endOfDay();
         $data = Kasus::with('category')->whereBetween('tanggal', [$startDate, $endDate])->get();
 
-        
+        $startDateObj = DateTime::createFromFormat('Y-m-d H:i:s', $startDate);
+        $startYear = $startDateObj->format('Y');
+
+        $endDateObj = DateTime::createFromFormat('Y-m-d H:i:s', $endDate);
+        $endYear = $endDateObj->format('Y');
+
         $pdf = new Dompdf();
-        $pdf->loadHtml(View::make('pdf.kasus', ['data' => $data])->render());
+        $pdf->loadHtml(View::make('pdf.kasus', ['data' => $data, 'year' => $startYear . '-' . $endYear])->render());
         $pdf->setPaper('A4', 'landscape');
 
         $pdf->render();
 
-        return $pdf->stream('kasus.pdf');
+        return $pdf->stream('Data Kematian Ibu ' . $startYear . '-' . $endYear . '.pdf');
     }
 
     public function getKasusPerYear()
@@ -57,10 +63,24 @@ class KasusController extends Controller
                             ->get()
                             ->pluck('total', 'year')
                             ->toArray();
-    
+
         return response()->json($countedData);
     }
-    
+
+    public function getKasusPerPenolong()
+    {
+        $caseCounts = Kasus::groupBy('penolong_pertama')
+                            ->selectRaw('penolong_pertama, COUNT(*) as count')
+                            ->get();
+
+        $data = [
+            'non_medis' => $caseCounts->where('penolong_pertama', 'non_medis')->pluck('count')->first() ?? 0,
+            'medis' => $caseCounts->where('penolong_pertama', 'medis')->pluck('count')->first() ?? 0,
+        ];
+
+        return response()->json($data);
+    }
+
     public function getKasusPerKategori()
     {
         $countedData = Kasus::select('category_penyebab.nama_category', DB::raw('count(*) as total'))
@@ -69,7 +89,7 @@ class KasusController extends Controller
                             ->get()
                             ->pluck('total', 'nama_category')
                             ->toArray();
-    
+
         return response()->json($countedData);
     }
 
@@ -79,10 +99,10 @@ class KasusController extends Controller
             if ($request->isMethod('get')) {
                 $perPage = $request->input('per_page', 10);
                 $query = Kasus::query();
-    
+
                 $query->leftJoin('category_penyebab', 'kasus.id_category', '=', 'category_penyebab.id');
                 $query->leftJoin('poi', 'kasus.alur', '=', 'poi.id');
-          
+
                 if ($request->has('search')) {
                     $searchTerm = $request->input('search');
                     $query->where('kasus.alamat', 'like', "%$searchTerm%")
@@ -99,19 +119,19 @@ class KasusController extends Controller
                 }
 
                 $alurValues = Kasus::pluck('alur')->toArray();
-                
+
                 foreach ($alurValues as $alurValue) {
                     $query->orWhere('kasus.alur', 'like', "%$alurValue%");
                 }
-    
+
                 $data = $query->select(
-                                    'kasus.*', 
-                                    'kasus.id as id', 
+                                    'kasus.*',
+                                    'kasus.id as id',
                                     'category_penyebab.nama_category as nama_kategori',
                                     'poi.nama_titik as nama_titik',
                                     'poi.id as id_poi'
                                 )
-                              ->paginate($perPage); 
+                              ->paginate($perPage);
                 return $this->jsonResponse(true, $data, 200);
             }
 
@@ -132,6 +152,8 @@ class KasusController extends Controller
                 'bukti_kematian' => $bukti_kematian,
                 'tempat_kematian' => $request->tempat_kematian,
                 'estafet_rujukan' => $request->estafet_rujukan,
+                'gravida' => $request->gravida,
+                'penolong_pertama' => $request->penolong_pertama,
                 'alur' => $alur,
                 'masa_kematian' => $request->masa_kematian,
                 'hari_kematian' => $request->hari_kematian,
@@ -162,16 +184,16 @@ class KasusController extends Controller
             if (!Kasus::find($id)) {
                 return $this->jsonResponse(false, 'Kasus not found.', 404);
             }
-    
+
             if ($request->isMethod('get')) {
                 return $this->jsonResponse(true, Kasus::find($id), 200);
             }
-    
+
             $kasus = Kasus::find($id);
-            $kasus->update($request->only(['nama', 'alamat', 'usia_ibu', 'tanggal', 'id_category', 'tempat_kematian', 'estafet_rujukan', 'alur', 'masa_kematian', 'hari_kematian']));
-    
+            $kasus->update($request->only(['nama', 'alamat', 'usia_ibu', 'tanggal', 'id_category', 'tempat_kematian', 'estafet_rujukan', 'alur', 'masa_kematian', 'hari_kematian', 'gravida', 'penolong_pertama']));
+
             $bukti_kematian = $this->handleFileUpload($request);
-            
+
             if ($bukti_kematian) {
                 $kasus->bukti_kematian = $bukti_kematian;
                 $kasus->save();
@@ -196,22 +218,22 @@ class KasusController extends Controller
             if ($request->isMethod('get')) {
                 $perPage = $request->input('per_page', 10);
                 $query = CategoryPenyebab::query();
-    
+
                 if ($request->has('search')) {
                     $searchTerm = $request->input('search');
                     $query->where('nama_category', 'like', "%$searchTerm%");
                 }
-    
+
                 $categories = $query->paginate($perPage);
-    
+
                 return $this->jsonResponse(true, $categories, 200);
             }
-    
+
             CategoryPenyebab::create([
                 'nama_category' => $request->nama_category,
                 'deskripsi' => $request->deskripsi,
             ]);
-    
+
             return $this->jsonResponse(true, 'Berhasil Menambah Kategori Penyebab.');
         }
 
@@ -227,14 +249,14 @@ class KasusController extends Controller
             if (!CategoryPenyebab::find($id)) {
                 return $this->jsonResponse(false, 'Category Penyebab not found.', 404);
             }
-    
+
             if ($request->isMethod('get')) {
                 return $this->jsonResponse(true, CategoryPenyebab::find($id), 200);
             }
-    
+
             $categoryPenyebab = CategoryPenyebab::find($id);
             $categoryPenyebab->update($request->only(['nama_category', 'deskripsi']));
-    
+
             return $this->jsonResponse(true, 'Berhasil Memperbarui category penyebab.');
         }
     }

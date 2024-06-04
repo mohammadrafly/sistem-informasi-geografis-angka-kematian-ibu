@@ -11,4 +11,9 @@ class Daerah extends Model
 
     protected $table = 'daerah';
     protected $guarded = [];
+
+    public function poi()
+    {
+        return $this->hasMany(POI::class)->with('kasus');
+    }
 }

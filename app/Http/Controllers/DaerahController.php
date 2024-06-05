@@ -20,24 +20,24 @@ class DaerahController extends Controller
     {
         if ($request->hasFile('geojson')) {
             $geojson = $request->file('geojson');
-            
+
             $content = file_get_contents($geojson->getPathname());
-            
+
             $data = json_decode($content, true);
-            
+
             $coordinates = [];
             foreach ($data['features'] as $feature) {
                 if (isset($feature['geometry']['coordinates'])) {
                     $coordinates = array_merge($coordinates, $feature['geometry']['coordinates']);
                 }
             }
-    
+
             $jsContent = json_encode($coordinates, JSON_PRETTY_PRINT);
 
             return $jsContent;
         }
         return null;
-    }    
+    }
 
     public function getDaerah()
     {
@@ -58,9 +58,9 @@ class DaerahController extends Controller
                             ->orWhere('geojson', 'like', "%$searchTerm%")
                             ->orWhere('warna', 'like', "%$searchTerm%");
                 }
-            
+
                 $data = $query->paginate($perPage);
-      
+
                 return $this->jsonResponse(true, $data, 200);
             }
 
@@ -70,8 +70,9 @@ class DaerahController extends Controller
                 'nama_daerah' => $request->nama_daerah,
                 'geojson' => $geojson,
                 'warna' => $request->warna,
+                'kelahiran_hidup' => $request->kelahiran_hidup
             ]);
-    
+
             return $this->jsonResponse(true, 'Berhasil Menambah Daerah.');
         }
 
@@ -88,21 +89,21 @@ class DaerahController extends Controller
             if (!$request->ajax()) {
                 return $this->jsonResponse(false, 'Daerah not found.', 404);
             }
-    
+
             if ($request->isMethod('get')) {
                 return $this->jsonResponse(true, Daerah::find($id), 200);
             }
-    
+
             $daerah = Daerah::find($id);
-            $daerah->update($request->only(['nama_daerah', 'warna']));
-    
+            $daerah->update($request->only(['nama_daerah', 'warna', 'kelahiran_hidup']));
+
             $geojson = $this->handleFileUpload($request);
-    
+
             if ($geojson) {
                 $daerah->geojson = $geojson;
                 $daerah->save();
             }
-    
+
             return $this->jsonResponse(true, 'Berhasil Memperbarui Daerah.');
         }
     }

@@ -7,7 +7,14 @@
     <p class="font-bold">(Data dapat berubah sewaktu-waktu)</p>
 </div>
 
-<button id="refreshButton" onclick="refreshData()" class="text-white mt-10 mb-2 bg-blue-500 rounded-lg p-2 border border-black">Update Bondowoso</button>
+<div>
+    <label for="yearSelect">Pilih Tahun: </label>
+    <select id="yearSelect" class="text-white mt-10 mb-2 bg-blue-500 rounded-lg p-2 border border-black">
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+    </select>
+</div>
 <div class="flex justify-between gap-5">
     <div class="grid grid-cols-1 gap-5">
         <div class="bg-white w-96 border border-black rounded-lg">
@@ -72,16 +79,22 @@
 @section('script')
 
 <script>
-    function fetchData() {
+    function fetchData(selectedYear) {
         fetch('{{route('kasus.year.home')}}')
             .then(response => response.json())
             .then(data => {
-                renderChart(data);
+                if (selectedYear) {
+                    const filteredData = data[selectedYear];
+                    renderChart(filteredData);
+                } else {
+                    renderChart(data);
+                }
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
     }
+
 
     function renderChart(chartData) {
         const years = Object.keys(chartData);
@@ -381,7 +394,7 @@
         };
     }
 
-    function getGeojsonDaerah() {
+    function getGeojsonDaerah(selectedYear) {
         $.ajax({
             url: BASEURL + 'peta/resiko/get-daerah',
             success: function(data) {
@@ -391,43 +404,43 @@
                     url: BASEURL + 'peta/resiko/get-poi',
                     success: function(poiData) {
                         var kelahiranMati = 0;
-                        var kelahiranHidup = 0;
 
                         var poiCounts = poiData.reduce(function(acc, poi) {
-                            if (poi.category.nama_category === 'AKI') {
-                                var existingEntry = acc.find(entry => entry.daerah_id === poi.id_daerah);
-                                if (existingEntry) {
-                                    var existingKasus = existingEntry.kasus || [];
-                                    var existingKasusCount = existingKasus.find(kasus => kasus.jenis === poi.kasus.jenis);
-                                    if (existingKasusCount) {
-                                        existingKasusCount.total++;
-
-                                        if (poi.kasus.jenis === 'kelahiran_mati') {
+                            if (poi.category.nama_category === 'AKI' && poi.kasus && poi.kasus.tanggal) {
+                                var poiYear = new Date(poi.kasus.tanggal).getFullYear();
+                                if (poiYear === selectedYear) {
+                                    var existingEntry = acc.find(entry => entry.daerah_id === poi.id_daerah);
+                                    if (existingEntry) {
+                                        var existingKasus = existingEntry.kasus || [];
+                                        var existingKasusCount = existingKasus.find(kasus => kasus.jenis === poi.kasus.jenis);
+                                        if (existingKasusCount) {
+                                            existingKasusCount.total++;
                                             kelahiranMati++;
-                                        } else if (poi.kasus.jenis === 'kelahiran_hidup') {
-                                            kelahiranHidup++;
+                                        } else {
+                                            existingKasus.push({ jenis: poi.kasus.jenis, total: 1 });
+                                            kelahiranMati++;
                                         }
-
                                     } else {
-                                        existingKasus.push({ jenis: poi.kasus.jenis, total: 1 });
+                                        acc.push({ id_daerah: poi.daerah_id, kasus: [{ jenis: poi.kasus.jenis, total: 1 }] });
+                                        kelahiranMati++;
                                     }
-                                } else {
-                                    acc.push({ id_daerah: poi.daerah_id, kasus: [{ jenis: poi.kasus.jenis, total: 1 }] });
                                 }
                             }
                             return acc;
                         }, []);
 
                         function getColor(count) {
-                            if (count < 30) return 'green';
-                            if (count >= 30 && count <= 100) return 'yellow';
-                            if (count > 100) return 'red';
+                            if (count <= 126) return 'green';
+                            if (count >= 127 && count <= 189) return 'yellow';
+                            if (count >= 190) return 'red';
                         }
 
                         dataArray.forEach(function(featureData) {
+                            var kelahiranHidup = featureData.kelahiran_hidup;
                             var Daerah = createGeoJSONFeature(JSON.parse(featureData.geojson.replace(/"/g, '')));
-                            var poiDataForDaerah = poiCounts.find(poi => poi.id_daerah === featureData.id) || {total: 0};
-                            var finalColor = getColor(kelahiranMati ?? 1 / kelahiranHidup ?? 1);
+                            var poiDataForDaerah = poiCounts.find(poi => poi.id_daerah === featureData.id) || { kasus: [] };
+                            var finalColor = getColor((kelahiranMati ?? 1 / kelahiranHidup ?? 1) * 100000);
+                            console.log(finalColor)
                             var LayerDaerah = L.geoJSON(Daerah, {
                                 style: {
                                     fillColor: finalColor,
@@ -474,148 +487,171 @@
     var allPois = [];
     let daerahPoiCounts = {};
 
-    function getGeojsonPoi() {
-        const url = BASEURL + 'peta/resiko/get-poi';
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const dataArray = data;
-                dataArray.forEach(featureData => {
-                    const Poi = createGeoJSONFeature(JSON.parse(featureData.geojson.replace(/"/g, '')));
-                    const LayerPoi = L.geoJSON(Poi, {
-                        style: {
-                            fillColor: featureData.warna,
-                            color: featureData.warna,
-                            weight: 2
-                        },
-                        pointToLayer: function(feature, latlng) {
-                            const iconUrl = featureData.category.nama_category === 'AKI' ? `
-                                <svg class="w-5 h-5 bg-white rounded-full" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="${featureData.warna}" viewBox="0 0 24 24">
-                                    <path fill-rule="evenodd" d="M12 20a7.966 7.966 0 0 1-5.002-1.756l.002.001v-.683c0-1.794 1.492-3.25 3.333-3.25h3.334c1.84 0 3.333 1.456 3.333 3.25v.683A7.966 7.966 0 0 1 12 20ZM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10c0 5.5-4.44 9.963-9.932 10h-.138C6.438 21.962 2 17.5 2 12Zm10-5c-1.84 0-3.333 1.455-3.333 3.25S10.159 13.5 12 13.5c1.84 0 3.333-1.455 3.333-3.25S13.841 7 12 7Z" clip-rule="evenodd"/>
-                                </svg>
-                            ` : `
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="${featureData.warna}" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5  bg-white rounded-full">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                                </svg>
-                            `;
+    function getGeojsonPoi(selectedYear) {
+            const url = BASEURL + 'peta/resiko/get-poi';
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const filteredData = data.filter(featureData => {
+                        if (featureData.category.nama_category === 'Rumah Sakit') {
+                            return true;
+                        }
+                        if (featureData.kasus && featureData.kasus.tanggal) {
+                            const poiYear = new Date(featureData.kasus.tanggal).getFullYear();
+                            return poiYear === selectedYear;
+                        }
+                        return false;
+                    });
 
-                            return L.marker(latlng, {
-                                icon: L.divIcon({
-                                    html: iconUrl,
-                                    iconSize: [0, 0],
-                                    iconAnchor: [10, 10]
-                                })
-                            });
-                        },
-                        onEachFeature: function(feature, layer) {
-                            layer.category = featureData.category.nama_category;
-                            layer.name = featureData.nama_titik;
-                            layer.id = featureData.id;
-                            layer.alur = featureData.kasus === null ? '' : featureData.kasus.alur;
-                            allPois.push(layer);
-                            layer.on('click', function(e) {
-                                drawnLines.forEach(line => map.removeLayer(line));
-                                drawnLines = [];
+                    geojsonLayerGroup.clearLayers(); // Clear previous layers
+                    allPois = []; // Clear allPois array
 
-                                const alurIds = layer.alur.split(',');
-
-                                const alurLayers = allPois.filter(poi => alurIds.includes(poi.id.toString()));
-
-                                alurLayers.sort((a, b) => alurIds.indexOf(a.id.toString()) - alurIds.indexOf(b.id.toString()));
-
-                                alurLayers.forEach((alurLayer, index) => {
-                                    const startPoint = index === 0 ? e.latlng : alurLayers[index - 1].getLatLng();
-                                    const endPoint = alurLayer.getLatLng();
-
-                                    const polyline = L.polyline([startPoint, endPoint], {
-                                        color: 'green',
-                                        dashArray: '5, 5'
-                                    }).addTo(map);
-                                    drawnLines.push(polyline);
-                                });
-
-                                const alurNames = alurIds.map(id => {
-                                    const poi = allPois.find(poi => poi.id.toString() === id);
-                                    return poi ? poi.name : '';
-                                }).filter(name => name !== '');
-
-                                const rumahSakitPois = allPois.filter(poi => poi.category === 'Rumah Sakit');
-                                const nearestRumahSakitPoi = L.GeometryUtil.closestLayer(map, rumahSakitPois, e.latlng);
-                                const nearestRumahSakitPoiLatLng = nearestRumahSakitPoi.latlng;
-
-                                function formatValue(value) {
-                                    return `${value ?? ''}`;
-                                }
-
-                                const namaValue = formatValue(featureData.kasus?.nama);
-                                const alamatValue = formatValue(featureData.kasus?.alamat);
-                                const tanggalKematianValue = formatValue(featureData.kasus?.tanggal);
-                                const usiaValue = formatValue(featureData.kasus?.usia_ibu);
-                                const penyebabValue = formatValue(featureData.penyebab?.nama_category);
-                                const deskripsiValue = formatValue(featureData.penyebab?.deskripsi);
-                                const estafetValue = formatValue(featureData.kasus?.estafet_rujukan);
-                                const alurValue = `${alurNames.join(' -> ')}`;
-                                const masaValue = formatValue(featureData.kasus?.masa_kematian);
-
-                                let content = '';
-                                let roundedDistance = '';
-
-                                const matchingFeatureData = dataArray.find(featureDataItem => {
-                                    const coordinatesString = featureDataItem.geojson;
-                                    const coordinatesArray = JSON.parse(coordinatesString);
-                                    const formattedCoordinates = {
-                                        lat: coordinatesArray[1],
-                                        lng: coordinatesArray[0]
-                                    };
-                                    const featureDataLatLng = L.latLng(formattedCoordinates);
-                                    return match = featureDataLatLng.equals(nearestRumahSakitPoiLatLng);
-                                });
-
-                                const coordinatesString = featureData.geojson;
-                                const coordinatesArray = JSON.parse(coordinatesString);
-                                const featureDataLatLng = L.latLng(coordinatesArray[1], coordinatesArray[0]);
-                                const distanceInMeters = featureDataLatLng.distanceTo(nearestRumahSakitPoiLatLng);
-                                roundedDistance = Math.round(distanceInMeters);
-
-                                if (featureData.category.nama_category === 'AKI') {
-                                    content = `
-                                    <div class="font-sm">
-                                        <p>
-                                        Alamat   : ${alamatValue ?? ''}<br/>
-                                        Tanggal  : ${tanggalKematianValue ?? ''}<br/>
-                                        Usia     : ${usiaValue ?? ''}<br/>
-                                        Penyebab : ${penyebabValue ?? ''}<br/>
-                                        Pencegahan : ${deskripsiValue} <br/>
-                                        </p>
-                                        <p>Fasilitas Pelayanan Kesehatan Terdekat: ${matchingFeatureData.nama_titik} (${roundedDistance} Meter)</p>
-                                    </div>
-                                    `;
-                                }
-
-                                const popupContent = `
-                                    <h4 class="font-semibold">${featureData.nama_titik} - ${featureData.category.nama_category}</h4>
-                                    ${content}
+                    filteredData.forEach(featureData => {
+                        const Poi = createGeoJSONFeature(JSON.parse(featureData.geojson.replace(/"/g, '')));
+                        const LayerPoi = L.geoJSON(Poi, {
+                            style: {
+                                fillColor: featureData.warna,
+                                color: featureData.warna,
+                                weight: 2
+                            },
+                            pointToLayer: function(feature, latlng) {
+                                const iconUrl = featureData.category.nama_category === 'AKI' ? `
+                                    <svg class="w-5 h-5 bg-white rounded-full" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="${featureData.warna}" viewBox="0 0 24 24">
+                                        <path fill-rule="evenodd" d="M12 20a7.966 7.966 0 0 1-5.002-1.756l.002.001v-.683c0-1.794 1.492-3.25 3.333-3.25h3.334c1.84 0 3.333 1.456 3.333 3.25v.683A7.966 7.966 0 0 1 12 20ZM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10c0 5.5-4.44 9.963-9.932 10h-.138C6.438 21.962 2 17.5 2 12Zm10-5c-1.84 0-3.333 1.455-3.333 3.25S10.159 13.5 12 13.5c1.84 0 3.333-1.455 3.333-3.25S13.841 7 12 7Z" clip-rule="evenodd"/>
+                                    </svg>
+                                ` : `
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="${featureData.warna}" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5  bg-white rounded-full">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                                    </svg>
                                 `;
 
-                                const popup = L.popup({ closeButton: true })
-                                    .setContent(popupContent)
-                                    .setLatLng(e.latlng);
+                                return L.marker(latlng, {
+                                    icon: L.divIcon({
+                                        html: iconUrl,
+                                        iconSize: [0, 0],
+                                        iconAnchor: [10, 10]
+                                    })
+                                });
+                            },
+                            onEachFeature: function(feature, layer) {
+                                layer.category = featureData.category.nama_category;
+                                layer.name = featureData.nama_titik;
+                                layer.id = featureData.id;
+                                layer.alur = featureData.kasus === null ? '' : featureData.kasus.alur;
+                                allPois.push(layer);
+                                layer.on('click', function(e) {
+                                    drawnLines.forEach(line => map.removeLayer(line));
+                                    drawnLines = [];
 
-                                popup.openOn(map);
-                            });
-                        }
-                    }).addTo(map);
+                                    const alurIds = layer.alur.split(',');
+
+                                    const alurLayers = allPois.filter(poi => alurIds.includes(poi.id.toString()));
+
+                                    alurLayers.sort((a, b) => alurIds.indexOf(a.id.toString()) - alurIds.indexOf(b.id.toString()));
+
+                                    alurLayers.forEach((alurLayer, index) => {
+                                        const startPoint = index === 0 ? e.latlng : alurLayers[index - 1].getLatLng();
+                                        const endPoint = alurLayer.getLatLng();
+
+                                        const polyline = L.polyline([startPoint, endPoint], {
+                                            color: 'green',
+                                            dashArray: '5, 5'
+                                        }).addTo(map);
+                                        drawnLines.push(polyline);
+                                    });
+
+                                    const alurNames = alurIds.map(id => {
+                                        const poi = allPois.find(poi => poi.id.toString() === id);
+                                        return poi ? poi.name : '';
+                                    }).filter(name => name !== '');
+
+                                    const rumahSakitPois = allPois.filter(poi => poi.category === 'Rumah Sakit');
+                                    const nearestRumahSakitPoi = L.GeometryUtil.closestLayer(map, rumahSakitPois, e.latlng);
+                                    const nearestRumahSakitPoiLatLng = nearestRumahSakitPoi.latlng;
+
+                                    function formatValue(value) {
+                                        return `${value ?? ''}`;
+                                    }
+
+                                    const namaValue = formatValue(featureData.kasus?.nama);
+                                    const alamatValue = formatValue(featureData.kasus?.alamat);
+                                    const tanggalKematianValue = formatValue(featureData.kasus?.tanggal);
+                                    const usiaValue = formatValue(featureData.kasus?.usia_ibu);
+                                    const penyebabValue = formatValue(featureData.penyebab?.nama_category);
+                                    const deskripsiValue = formatValue(featureData.penyebab?.deskripsi);
+                                    const estafetValue = formatValue(featureData.kasus?.estafet_rujukan);
+                                    const alurValue = `${alurNames.join(' -> ')}`;
+                                    const masaValue = formatValue(featureData.kasus?.masa_kematian);
+
+                                    let content = '';
+                                    let roundedDistance = '';
+
+                                    const matchingFeatureData = filteredData.find(featureDataItem => {
+                                        const coordinatesString = featureDataItem.geojson;
+                                        const coordinatesArray = JSON.parse(coordinatesString);
+                                        const formattedCoordinates = {
+                                            lat: coordinatesArray[1],
+                                            lng: coordinatesArray[0]
+                                        };
+                                        const featureDataLatLng = L.latLng(formattedCoordinates);
+                                        return featureDataLatLng.equals(nearestRumahSakitPoiLatLng);
+                                    });
+
+                                    const coordinatesString = featureData.geojson;
+                                    const coordinatesArray = JSON.parse(coordinatesString);
+                                    const featureDataLatLng = L.latLng(coordinatesArray[1], coordinatesArray[0]);
+                                    const distanceInMeters = featureDataLatLng.distanceTo(nearestRumahSakitPoiLatLng);
+                                    roundedDistance = Math.round(distanceInMeters);
+
+                                    if (featureData.category.nama_category === 'AKI') {
+                                        content = `
+                                        <div class="font-sm">
+                                            <p>
+                                            Alamat   : ${alamatValue ?? ''}<br/>
+                                            Tanggal  : ${tanggalKematianValue ?? ''}<br/>
+                                            Usia     : ${usiaValue ?? ''}<br/>
+                                            Penyebab : ${penyebabValue ?? ''}<br/>
+                                            Pencegahan : ${deskripsiValue} <br/>
+                                            </p>
+                                            <p>Fasilitas Pelayanan Kesehatan Terdekat: ${matchingFeatureData.nama_titik} (${roundedDistance} Meter)</p>
+                                        </div>
+                                        `;
+                                    }
+
+                                    const popupContent = `
+                                        <h4 class="font-semibold">${featureData.nama_titik} - ${featureData.category.nama_category}</h4>
+                                        ${content}
+                                    `;
+
+                                    const popup = L.popup({ closeButton: true })
+                                        .setContent(popupContent)
+                                        .setLatLng(e.latlng);
+
+                                    popup.openOn(map);
+                                });
+                            }
+                        }).addTo(geojsonLayerGroup);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching GeoJSON:', error);
                 });
-            })
-            .catch(error => {
-                console.error('Error fetching GeoJSON:', error);
-            });
-    }
+        }
+
+    document.getElementById('yearSelect').addEventListener('change', function() {
+        var selectedYear = parseInt(this.value);
+        geojsonLayerGroup.clearLayers();
+        geojsonLayers = [];
+        getGeojsonPoi(selectedYear);
+        getGeojsonDaerah(selectedYear);
+    });
+
+    document.getElementById('yearSelect').dispatchEvent(new Event('change'));
 
     $(document).ready(function() {
         getGeojsonDaerah();

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nama_daerah');
             $table->text('geojson');
             $table->string('warna');
+            $table->string('kelahiran_hidup');
             $table->timestamps();
         });
     }

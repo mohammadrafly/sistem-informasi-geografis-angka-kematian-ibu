@@ -89,7 +89,8 @@ function populateTable(response) {
         var row = $('<tr>').addClass('bg-white border-b');
         row.append($('<td>').addClass('px-6 py-4').text(index + 1));
         row.append($('<td>').addClass('px-6 py-4').text(daerah.nama_daerah));
-        row.append($('<td>').addClass('px-6 py-4').text(daerah.geojson.substring(0, 20) + (daerah.geojson.length > 20 ? '...' : ''))); 
+        row.append($('<td>').addClass('px-6 py-4').text(daerah.kelahiran_hidup));
+        row.append($('<td>').addClass('px-6 py-4').text(daerah.geojson.substring(0, 20) + (daerah.geojson.length > 20 ? '...' : '')));
         row.append($('<td>').addClass('px-6 py-4').text(daerah.warna));
         var editButton = $('<button>')
             .addClass('font-medium text-white bg-blue-600 py-1 px-2 rounded-lg hover:underline')
@@ -98,7 +99,7 @@ function populateTable(response) {
             .click(function() {
                 editDaerah(daerah.id);
             });
-        
+
         var deleteButton = $('<button>')
             .addClass('ml-2 font-medium text-white bg-red-600 py-1 px-2 rounded-lg hover:underline')
             .text('Delete')
@@ -106,7 +107,7 @@ function populateTable(response) {
             .click(function() {
                 deleteDaerah(daerah.id);
             });
-        
+
         row.append($('<td>').addClass('px-6 py-4').append(editButton).append(deleteButton));
 
         tableBody.append(row);
@@ -135,7 +136,7 @@ function saveDaerah() {
         });
     }
 
-function editDaerah(daerahId) {  
+function editDaerah(daerahId) {
     ajaxRequest('dashboard/daerah/update/' + daerahId, 'GET', '',
         function(response) {
             $('#daerahForm')[0].reset();
@@ -143,6 +144,7 @@ function editDaerah(daerahId) {
             toggleCollapse('form');
             $('#id').val(response.message.id);
             $('#nama_daerah').val(response.message.nama_daerah);
+            $('#kelahiran_hidup').val(response.message.kelahiran_hidup);
             $('#geojson').attr('src',response.message.geojson);
             $('#warna').val(response.message.warna);
             fetchData();

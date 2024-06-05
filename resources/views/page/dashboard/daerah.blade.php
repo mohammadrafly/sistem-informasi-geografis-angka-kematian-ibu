@@ -15,6 +15,10 @@
             <input type="number" id="id" name="id" hidden>
         </div>
         <div class="mb-4">
+            <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Jumlah Kelahiran Hidup</label>
+            <input type="number" class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="kelahiran_hidup" id="kelahiran_hidup" placeholder="Masukkan Jumalah Kelahiran Hidup" required>
+        </div>
+        <div class="mb-4">
             <label for="hs-color-input" class="block mb-2 text-sm font-medium text-black">Pilih Warna</label>
             <input type="color" class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" id="warna" name="warna" title="Choose your color">
         </div>
@@ -51,6 +55,9 @@
                 </th>
                 <th scope="col" class="px-6 py-3">
                     Warna
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Kelahiran Hidup
                 </th>
                 <th scope="col" class="px-6 py-3">
                     Action

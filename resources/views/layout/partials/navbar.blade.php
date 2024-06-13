@@ -15,7 +15,7 @@
                     </li>
                     <li class="px-3">
                         <a href="{{ route('artikel.home') }}">
-                            Artikel
+                            Informasi
                         </a>
                     </li>
                     <li class="pl-3">

@@ -451,17 +451,17 @@
                                 onEachFeature: function(feature, layer) {
                                     layer.on({
                                         mouseover: function(e) {
-                                            layer.setStyle({ fillOpacity: 0.3 });
+                                            layer.setStyle({ fillOpacity: 0.5 });
                                         },
                                         mouseout: function(e) {
-                                            layer.setStyle({ fillOpacity: 0.2 });
+                                            layer.setStyle({ fillOpacity: 0.4 });
                                         },
                                         click: function(e) {
                                             var popupContent = featureData.nama_daerah;
                                             if (popupContent) {
                                                 var popup = L.popup().setContent(popupContent);
                                                 layer.bindPopup(popup).openPopup();
-                                            } else {
+                                              } else {
                                                 console.warn('No popup content provided for this feature.');
                                             }
                                         }
@@ -618,7 +618,7 @@
                                             Penyebab : ${penyebabValue ?? ''}<br/>
                                             Pencegahan : ${deskripsiValue} <br/>
                                             </p>
-                                            <p>Fasilitas Pelayanan Kesehatan Terdekat: ${matchingFeatureData.nama_titik} (${roundedDistance} Meter)</p>
+                                            <p>Rumah Sakit Rujukan: ${matchingFeatureData.nama_titik} (${roundedDistance} Meter)</p>
                                         </div>
                                         `;
                                     }
@@ -661,18 +661,18 @@
 
         legend.onAdd = function(map) {
             var div = L.DomUtil.create('div', 'info legend bg-white p-4 rounded-lg border border-black');
-            div.innerHTML += '<h4 class="text-lg font-semibold mb-2">Status Resiko</h4>';
+            div.innerHTML += '<h4 class="text-lg font-semibold mb-2">Status Risiko</h4>';
             div.innerHTML += `<div class="flex">
                                 <div class="bg-red-500 px-5 m-1"></div>
-                                <h1>Resiko Tinggi</h1>
+                                <h1>Risiko Tinggi (>35/100.000 kelahiran hidup)</h1>
                             </div>`;
             div.innerHTML += `<div class="flex">
                                 <div class="bg-yellow-400 px-5 m-1"></div>
-                                <h1>Resiko Sedang</h1>
+                                <h1>Risiko Sedang (36-69 kelahiran hidup)</h1>
                             </div>`;
             div.innerHTML += `<div class="flex">
                                 <div class="bg-green-500 px-5 m-1"></div>
-                                <h1>Resiko Rendah</h1>
+                                <h1>Risiko Rendah (<70/100 kelahiran hidup)</h1>
                             </div>`;
             return div;
         };

@@ -58,15 +58,33 @@
                 <option value="nifas">Nifas</option>
             </select>
         </div>
+        <div id="form_persalinan" class="masa-form hidden mb-4">
+            <label for="< 6 Jam PP" class="block text-gray-700 text-sm font-bold mb-2">< 6 Jam PP</label>
+            <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="persalinan" id="persalinan" required>
+                <option selected value="1">True</option>
+            </select>
+        </div>
+        <div id="form_nifas" class="masa-form hidden mb-4">
+            <label for="nifas" class="block text-gray-700 text-sm font-bold mb-2">Nifas</label>
+            <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="nifas" id="nifas">
+                <option selected disabled>Pilih Nifas</option>
+                <option value="0">6-24 Jam PP</option>
+                <option value="1">1-3 Hari PP</option>
+                <option value="2">4-28 Hari PP</option>
+                <option value="3">29-42 Hari PP</option>
+            </select>
+        </div>
         <div class="mb-4">
             <label for="tempat_kematian" class="block text-gray-700 text-sm font-bold mb-2">Tempat Kematian</label>
             <select class="w-full border p-2 rounded border-gray-300 bg-gray-50 text-gray-400 focus:outline-none placeholder-gray-500" name="tempat_kematian" id="tempat_kematian" required>
                 <option selected disabled>Pilih Tempat Kematian</option>
                 <option value="bpm">BPM</option>
+                <option value="bps_polindes">BPS/Polinder</option>
                 <option value="perjalanan">Perjalanan</option>
                 <option value="puskesmas">Puskesmas</option>
                 <option value="rumah_ibu">Rumah Ibu</option>
                 <option value="rumah_sakit_umum">Rumah Sakit Umum</option>
+                <option value="rumah_sakit_umum">Rumah Sakit Swasta</option>
                 <option value="rumah_sakit_luar">Rumah Sakit Luar</option>
             </select>
         </div>

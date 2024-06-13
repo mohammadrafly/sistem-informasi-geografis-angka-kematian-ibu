@@ -26,6 +26,7 @@
                         <th class="px-4 py-2 bg-gray-200 text-gray-700 border border-gray-400">Usia Ibu (thn)</th>
                         <th class="px-4 py-2 bg-gray-200 text-gray-700 border border-gray-400">Gravida</th>
                         <th class="px-4 py-2 bg-gray-200 text-gray-700 border border-gray-400">Penyebab Kematian</th>
+                        <th class="px-4 py-2 bg-gray-200 text-gray-700 border border-gray-400">Masa Kematian</th>
                         <th class="px-4 py-2 bg-gray-200 text-gray-700 border border-gray-400">Tempat Kematian</th>
                     </tr>
                 </thead>
@@ -39,6 +40,7 @@
                         <td class="px-4 py-2 border border-gray-400">{{ $item->usia_ibu }}</td>
                         <td class="px-4 py-2 border border-gray-400">{{ $item->gravida }}</td>
                         <td class="px-4 py-2 border border-gray-400">{{ $item->category->nama_category }}</td>
+                        <td class="px-4 py-2 border border-gray-400">{{ $item->category->masa_kematian }}</td>
                         <td class="px-4 py-2 border border-gray-400">{{ $item->tempat_kematian }}</td>
                     </tr>
                     @endforeach

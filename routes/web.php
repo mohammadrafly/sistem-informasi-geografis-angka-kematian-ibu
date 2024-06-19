@@ -24,6 +24,7 @@ use App\Http\Controllers\UserController;
 
 Route::controller(HomeController::class)->group(function () {
     Route::redirect('/', 'peta/resiko')->name('home');
+    Route::get('/get/jumlah/data/{year?}', 'getJumlahKasus')->name('get.jumlah.kasus');
     Route::prefix('artikel')->group(function (){
         Route::match(['GET'], '/', 'artikelHome')->name('artikel.home');
         Route::match(['GET'], '/post/{id}', 'artikelSingleHome')->name('artikel.single.home');

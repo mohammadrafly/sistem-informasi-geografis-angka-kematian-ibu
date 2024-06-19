@@ -49,7 +49,6 @@
             <div id="map" class="w-full min-h-screen rounded-lg">
                 <div id="legend" class="leaflet-bottom leaflet-left"></div>
             </div>
-
         </div>
     </div>
 </div>
@@ -79,22 +78,16 @@
 @section('script')
 
 <script>
-    function fetchData(selectedYear) {
+    function fetchDataYear() {
         fetch('{{route('kasus.year.home')}}')
             .then(response => response.json())
             .then(data => {
-                if (selectedYear) {
-                    const filteredData = data[selectedYear];
-                    renderChart(filteredData);
-                } else {
-                    renderChart(data);
-                }
+                renderChart(data);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
     }
-
 
     function renderChart(chartData) {
         const years = Object.keys(chartData);
@@ -362,7 +355,7 @@
     }
 
     window.addEventListener('load', () => {
-        fetchData();
+        fetchDataYear();
         fetchDataPenyebab();
         fetchDataPenolong();
     });
@@ -400,10 +393,11 @@
             success: function(data) {
                 var dataArray = data;
 
+                console.log(dataArray)
                 $.ajax({
                     url: BASEURL + 'peta/resiko/get-poi',
                     success: function(poiData) {
-                        var kelahiranMati = 0;
+                        var kelahiranMati = 1;
 
                         var poiCounts = poiData.reduce(function(acc, poi) {
                             if (poi.category.nama_category === 'AKI' && poi.kasus && poi.kasus.tanggal) {
@@ -417,11 +411,11 @@
                                             existingKasusCount.total++;
                                             kelahiranMati++;
                                         } else {
-                                            existingKasus.push({ jenis: poi.kasus.jenis, total: 1 });
+                                            existingKasus.push({ jenis: poi.kasus.jenis, total: 1 }); // Default value of 1 for new kasus
                                             kelahiranMati++;
                                         }
                                     } else {
-                                        acc.push({ id_daerah: poi.daerah_id, kasus: [{ jenis: poi.kasus.jenis, total: 1 }] });
+                                        acc.push({ id_daerah: poi.daerah_id, kasus: [{ jenis: poi.kasus.jenis, total: 1 }] }); // Default value of 1 for new entry
                                         kelahiranMati++;
                                     }
                                 }
@@ -437,10 +431,10 @@
 
                         dataArray.forEach(function(featureData) {
                             var kelahiranHidup = featureData.kelahiran_hidup;
+                            console.log(featureData)
                             var Daerah = createGeoJSONFeature(JSON.parse(featureData.geojson.replace(/"/g, '')));
                             var poiDataForDaerah = poiCounts.find(poi => poi.id_daerah === featureData.id) || { kasus: [] };
-                            var finalColor = getColor((kelahiranMati ?? 1 / kelahiranHidup ?? 1) * 100000);
-                            console.log(finalColor)
+                            var finalColor = getColor(kelahiranMati ?? 1 / kelahiranHidup ?? 1);
                             var LayerDaerah = L.geoJSON(Daerah, {
                                 style: {
                                     fillColor: finalColor,
@@ -486,6 +480,7 @@
     let drawnLines = [];
     var allPois = [];
     let daerahPoiCounts = {};
+    let allLayers = [];
 
     function getGeojsonPoi(selectedYear) {
             const url = BASEURL + 'peta/resiko/get-poi';
@@ -508,8 +503,8 @@
                         return false;
                     });
 
-                    geojsonLayerGroup.clearLayers(); // Clear previous layers
-                    allPois = []; // Clear allPois array
+                    geojsonLayerGroup.clearLayers();
+                    allPois = [];
 
                     filteredData.forEach(featureData => {
                         const Poi = createGeoJSONFeature(JSON.parse(featureData.geojson.replace(/"/g, '')));
@@ -649,13 +644,16 @@
         geojsonLayers = [];
         getGeojsonPoi(selectedYear);
         getGeojsonDaerah(selectedYear);
+        populateTablePenyebab(selectedYear);
+        populateTableTempat(selectedYear);
+        fetchData(selectedYear);
     });
 
     document.getElementById('yearSelect').dispatchEvent(new Event('change'));
 
     $(document).ready(function() {
-        getGeojsonDaerah();
-        getGeojsonPoi();
+        var selectedYear = new Date().getFullYear();
+        getGeojsonDaerah(selectedYear);
 
         var legend = L.control({ position: 'bottomleft' });
 
@@ -680,75 +678,72 @@
         legend.addTo(map);
     });
 
-    function refreshData() {
+    document.getElementById('yearSelect').addEventListener('change', function() {
+        var selectedYear = parseInt(this.value);
+        geojsonLayerGroup.clearLayers();
+        geojsonLayers = [];
+        getGeojsonPoi(selectedYear);
+        getGeojsonDaerah(selectedYear);
+        fetchData(selectedYear);
+    });
+
+    $(document).ready(function() {
+        var year = parseInt(document.getElementById('yearSelect').value) || 2024;
+        fetchData(year);
+    });
+
+    function fetchData(year) {
         $.ajax({
-            url: '{{ route('peta') }}',
+            url: `http://127.0.0.1:8000/get/jumlah/data`,
+            data: { year: year },
             success: function(data) {
-                var timestamp = new Date().toLocaleString();
-                populateTablePenyebab(data, timestamp);
-                populateTableTempat(data, timestamp);
-                updateButtonTitle(timestamp);
+                populateTablePenyebab(year, data);
+                populateTableTempat(year, data);
             },
             error: function(xhr) {
                 console.error('Error:', xhr.statusText);
             }
         });
-
     }
 
-    function updateButtonTitle(timestamp) {
-        var button = document.getElementById('refreshButton');
-        button.textContent = "Update Bondowoso: " + timestamp;
-    }
-
-    $(document).ready(function() {
-        $.ajax({
-            url: '{{ route('peta') }}',
-            success: populateTablePenyebab,
-            error: function(xhr) { console.error('Error:', xhr.statusText); }
-        });
-
-        $.ajax({
-            url: '{{ route('peta') }}',
-            success: populateTableTempat,
-            error: function(xhr) { console.error('Error:', xhr.statusText); }
-        });
-    });
-
-    function populateTableTempat(data) {
+    function populateTableTempat(selectedYear, data) {
         var tableBody = document.getElementById('tableTempat').getElementsByTagName('tbody')[0];
         tableBody.innerHTML = '';
         var groupCounts = {};
 
-        if (data && data.success && data.message && data.message.groupTempat) {
-            Object.keys(data.message.groupTempat).forEach(function(group) {
-                var count = data.message.groupTempat[group];
-                groupCounts[group] = count;
-                var row = '<tr><td class="px-4 py-2">' + group + '</td><td class="px-4 py-2 text-right">' + count + '</td></tr>';
-                tableBody.innerHTML += row;
-            });
+        if (data && data.message) {
+            var groupTempat = data.message.groupTempat;
+            if (groupTempat) {
+                Object.keys(groupTempat).forEach(function(group) {
+                    var count = groupTempat[group];
+                    groupCounts[group] = count;
+                    var row = '<tr><td class="px-4 py-2">' + group + '</td><td class="px-4 py-2 text-right">' + count + '</td></tr>';
+                    tableBody.innerHTML += row;
+                });
+            }
         } else {
-            console.error("Data or data.message.groupTempat is undefined or not in the expected format.");
+            console.error("Data or data.message is undefined or not in the expected format.");
         }
     }
 
-    function populateTablePenyebab(data) {
+    function populateTablePenyebab(selectedYear, data) {
         var tableBody = document.getElementById('tablePenyebab').getElementsByTagName('tbody')[0];
         tableBody.innerHTML = '';
         var groupCounts = {};
 
-        if (data && data.success && data.message && data.message.groupPenyebab) {
-            Object.keys(data.message.groupPenyebab).forEach(function(group) {
-                var count = data.message.groupPenyebab[group];
-                groupCounts[group] = count;
-                var row = '<tr><td class="px-4 py-2">' + group + '</td><td class="px-4 py-2 text-right">' + count + '</td></tr>';
-                tableBody.innerHTML += row;
-            });
+        if (data && data.message) {
+            var groupPenyebab = data.message.groupPenyebab;
+            if (groupPenyebab) {
+                Object.keys(groupPenyebab).forEach(function(group) {
+                    var count = groupPenyebab[group];
+                    var row = '<tr><td class="px-4 py-2">' + group + '</td><td class="px-4 py-2 text-right">' + count + '</td></tr>';
+                    tableBody.innerHTML += row;
+                });
+            }
         } else {
-            console.error("Data or data.message.groupPenyebab is undefined or not in the expected format.");
+            console.error("Data or data.message is undefined or not in the expected format.");
         }
     }
-
 </script>
 
 @endSection()
